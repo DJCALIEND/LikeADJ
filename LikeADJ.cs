@@ -9,8 +9,20 @@ using System.Text;
 using System.Timers;
 using System.Windows.Forms;
 
+namespace CustomExtensions
+{
+    public static class StringExtension
+    {
+        public static bool IsIn<T>(this T source, params T[] values)
+        {
+            return values.Contains(source);
+        }
+    }
+}
+
 namespace MusicBeePlugin
 {
+    using CustomExtensions;
     public partial class Plugin
     {
         #region Many thanks to
@@ -27,10 +39,10 @@ namespace MusicBeePlugin
         Settings settings= new Settings();
         static Message message = new Message();
         public static LogFile monLogListener;
-        public static string LikeADJVersion;
+        public static string LikeADJVersion, LikeADJIniFile;
         public static bool isSettingsChanged = false;
         bool allowbpm, allowharmonickey, allowenergy, allowratings, allowgenres, savesongsplaylist, allowhue;
-        public static bool disablelogging;
+        public static bool disablelogging, MusicBeeisportable;
         int DiffBPM, minenergy, minrattings, numbersongsplaylist;
         public static int brightnesslightmin, brightnesslightmax;
         string changelightswhen, BeatDetectionEvery;
@@ -43,15 +55,12 @@ namespace MusicBeePlugin
         readonly System.Timers.Timer LikeADJTimerBeatDetectedSimple = new System.Timers.Timer();
         readonly System.Timers.Timer LikeADJTimerBeatDetectedSubBand = new System.Timers.Timer();
         readonly System.Timers.Timer LikeADJTimerRedAlertEndOfSong = new System.Timers.Timer();
-        public static string LikeADJIniFile;
         public static IniFile ini;
-        public static string[] genresdistinct = { };
         public static string[] genresAllowed;
         public string playlistName = "LikeADJ History "+ DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss");
         public string[] mbPlaylistSongFiles = new string[1];
         public bool isfirstsong = true;
         public int CountSongsPlaylist;
-        public static bool MusicBeeisportable;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -101,13 +110,6 @@ namespace MusicBeePlugin
 
             if (MusicBeeisportable) Trace.TraceInformation("MusicBee is portable. Using [" + Application.StartupPath + "] to save LikeADJ files.");
             else Trace.TraceInformation("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
-
-            string[] tracks = { };           
-            mbApiInterface.Library_QueryFilesEx("", out tracks);
-            string[] genres = new string[tracks.Length];
-            for (int i = 0; i < tracks.Length; i++) genres[i] = mbApiInterface.Library_GetFileTag(tracks[i], MetaDataType.Genre);
-            genresdistinct = genres.Distinct().ToArray();
-            Array.Sort(genresdistinct);
 
             mbApiInterface.MB_AddMenuItem("context.Main/Generate a LikeADJ playlist with all songs in your library", "LikeADJ", GeneratePlaylist);
             mbApiInterface.MB_AddMenuItem("context.Main/Configure LikeADJ plugin", "LikeADJ", ConfigurePlugin);
@@ -210,30 +212,30 @@ namespace MusicBeePlugin
 
                             if (allowharmonickey)
                             {
-                                if ((CurrentSongKey == "1A") && ((NextSongKey == "1B" || NextSongKey == "12A" || NextSongKey == "1A" || NextSongKey == "2A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "2A") && ((NextSongKey == "2B" || NextSongKey == "1A" || NextSongKey == "2A" || NextSongKey == "3A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "3A") && ((NextSongKey == "3B" || NextSongKey == "2A" || NextSongKey == "3A" || NextSongKey == "4A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "4A") && ((NextSongKey == "4B" || NextSongKey == "3A" || NextSongKey == "4A" || NextSongKey == "5A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "5A") && ((NextSongKey == "5B" || NextSongKey == "4A" || NextSongKey == "5A" || NextSongKey == "6A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "6A") && ((NextSongKey == "6B" || NextSongKey == "5A" || NextSongKey == "6A" || NextSongKey == "7A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "7A") && ((NextSongKey == "7B" || NextSongKey == "6A" || NextSongKey == "7A" || NextSongKey == "8A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "8A") && ((NextSongKey == "8B" || NextSongKey == "7A" || NextSongKey == "8A" || NextSongKey == "9A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "9A") && ((NextSongKey == "9B" || NextSongKey == "8A" || NextSongKey == "9A" || NextSongKey == "10A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "10A") && ((NextSongKey == "10B" || NextSongKey == "9A" || NextSongKey == "10A" || NextSongKey == "11A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "11A") && ((NextSongKey == "11B" || NextSongKey == "10A" || NextSongKey == "11A" || NextSongKey == "12A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "12A") && ((NextSongKey == "12B" || NextSongKey == "11A" || NextSongKey == "12A" || NextSongKey == "1A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "1B") && ((NextSongKey == "1A" || NextSongKey == "12B" || NextSongKey == "1B" || NextSongKey == "2B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "2B") && ((NextSongKey == "2A" || NextSongKey == "1B" || NextSongKey == "2B" || NextSongKey == "3B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "3B") && ((NextSongKey == "3A" || NextSongKey == "2B" || NextSongKey == "3B" || NextSongKey == "4B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "4B") && ((NextSongKey == "4A" || NextSongKey == "3B" || NextSongKey == "4B" || NextSongKey == "5B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "5B") && ((NextSongKey == "5A" || NextSongKey == "4B" || NextSongKey == "5B" || NextSongKey == "6B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "6B") && ((NextSongKey == "6A" || NextSongKey == "5B" || NextSongKey == "6B" || NextSongKey == "7B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "7B") && ((NextSongKey == "7A" || NextSongKey == "6B" || NextSongKey == "7B" || NextSongKey == "8B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "8B") && ((NextSongKey == "8A" || NextSongKey == "7B" || NextSongKey == "8B" || NextSongKey == "9B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "9B") && ((NextSongKey == "9A" || NextSongKey == "8B" || NextSongKey == "9B" || NextSongKey == "10B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "10B") && ((NextSongKey == "10A" || NextSongKey == "9B" || NextSongKey == "10B" || NextSongKey == "11B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "11B") && ((NextSongKey == "11A" || NextSongKey == "10B" || NextSongKey == "11B" || NextSongKey == "12B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "12B") && ((NextSongKey == "12A" || NextSongKey == "11B" || NextSongKey == "12B" || NextSongKey == "1B"))) FoundNextSong = true;
+                                if ((CurrentSongKey == "1A") && NextSongKey.IsIn("1B", "12A", "1A", "2A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "2A") && NextSongKey.IsIn("2B", "1A", "2A", "3A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "3A") && NextSongKey.IsIn("3B", "2A", "3A", "4A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "4A") && NextSongKey.IsIn("4B", "3A", "4A", "5A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "5A") && NextSongKey.IsIn("5B", "4A", "5A", "6A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "6A") && NextSongKey.IsIn("6B", "5A", "6A", "7A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "7A") && NextSongKey.IsIn("7B", "6A", "7A", "8A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "8A") && NextSongKey.IsIn("8B", "7A", "8A", "9A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "9A") && NextSongKey.IsIn("9B", "8A", "9A", "10A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "10A") && NextSongKey.IsIn("10B", "9A", "10A", "11A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "11A") && NextSongKey.IsIn("11B", "10A", "11A", "12A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "12A") && NextSongKey.IsIn("12B", "11A", "12A", "1A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "1B") && NextSongKey.IsIn("1A", "12B", "1B", "2B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "2B") && NextSongKey.IsIn("2A", "1B", "2B", "3B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "3B") && NextSongKey.IsIn("3A", "2B", "3B", "4B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "4B") && NextSongKey.IsIn("4A", "3B", "4B", "5B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "5B") && NextSongKey.IsIn("5A", "4B", "5B", "6B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "6B") && NextSongKey.IsIn("6A", "5B", "6B", "7B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "7B") && NextSongKey.IsIn("7A", "6B", "7B", "8B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "8B") && NextSongKey.IsIn("8A", "7B", "8B", "9B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "9B") && NextSongKey.IsIn("9A", "8B", "9B", "10B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "10B") && NextSongKey.IsIn("10A", "9B", "10B", "11B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "11B") && NextSongKey.IsIn("11A", "10B", "11B", "12B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "12B") && NextSongKey.IsIn("12A", "11B", "12B", "1B")) FoundNextSong = true;
                                 else
                                 {
                                     FoundNextSong = false;
@@ -464,30 +466,30 @@ namespace MusicBeePlugin
 
                             if (allowharmonickey)
                             {
-                                if ((CurrentSongKey == "1A") && ((NextSongKey == "1B" || NextSongKey == "12A" || NextSongKey == "1A" || NextSongKey == "2A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "2A") && ((NextSongKey == "2B" || NextSongKey == "1A" || NextSongKey == "2A" || NextSongKey == "3A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "3A") && ((NextSongKey == "3B" || NextSongKey == "2A" || NextSongKey == "3A" || NextSongKey == "4A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "4A") && ((NextSongKey == "4B" || NextSongKey == "3A" || NextSongKey == "4A" || NextSongKey == "5A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "5A") && ((NextSongKey == "5B" || NextSongKey == "4A" || NextSongKey == "5A" || NextSongKey == "6A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "6A") && ((NextSongKey == "6B" || NextSongKey == "5A" || NextSongKey == "6A" || NextSongKey == "7A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "7A") && ((NextSongKey == "7B" || NextSongKey == "6A" || NextSongKey == "7A" || NextSongKey == "8A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "8A") && ((NextSongKey == "8B" || NextSongKey == "7A" || NextSongKey == "8A" || NextSongKey == "9A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "9A") && ((NextSongKey == "9B" || NextSongKey == "8A" || NextSongKey == "9A" || NextSongKey == "10A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "10A") && ((NextSongKey == "10B" || NextSongKey == "9A" || NextSongKey == "10A" || NextSongKey == "11A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "11A") && ((NextSongKey == "11B" || NextSongKey == "10A" || NextSongKey == "11A" || NextSongKey == "12A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "12A") && ((NextSongKey == "12B" || NextSongKey == "11A" || NextSongKey == "12A" || NextSongKey == "1A"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "1B") && ((NextSongKey == "1A" || NextSongKey == "12B" || NextSongKey == "1B" || NextSongKey == "2B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "2B") && ((NextSongKey == "2A" || NextSongKey == "1B" || NextSongKey == "2B" || NextSongKey == "3B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "3B") && ((NextSongKey == "3A" || NextSongKey == "2B" || NextSongKey == "3B" || NextSongKey == "4B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "4B") && ((NextSongKey == "4A" || NextSongKey == "3B" || NextSongKey == "4B" || NextSongKey == "5B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "5B") && ((NextSongKey == "5A" || NextSongKey == "4B" || NextSongKey == "5B" || NextSongKey == "6B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "6B") && ((NextSongKey == "6A" || NextSongKey == "5B" || NextSongKey == "6B" || NextSongKey == "7B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "7B") && ((NextSongKey == "7A" || NextSongKey == "6B" || NextSongKey == "7B" || NextSongKey == "8B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "8B") && ((NextSongKey == "8A" || NextSongKey == "7B" || NextSongKey == "8B" || NextSongKey == "9B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "9B") && ((NextSongKey == "9A" || NextSongKey == "8B" || NextSongKey == "9B" || NextSongKey == "10B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "10B") && ((NextSongKey == "10A" || NextSongKey == "9B" || NextSongKey == "10B" || NextSongKey == "11B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "11B") && ((NextSongKey == "11A" || NextSongKey == "10B" || NextSongKey == "11B" || NextSongKey == "12B"))) FoundNextSong = true;
-                                else if ((CurrentSongKey == "12B") && ((NextSongKey == "12A" || NextSongKey == "11B" || NextSongKey == "12B" || NextSongKey == "1B"))) FoundNextSong = true;
+                                if ((CurrentSongKey == "1A") && NextSongKey.IsIn("1B", "12A", "1A", "2A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "2A") && NextSongKey.IsIn("2B", "1A", "2A", "3A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "3A") && NextSongKey.IsIn("3B", "2A", "3A", "4A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "4A") && NextSongKey.IsIn("4B", "3A", "4A", "5A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "5A") && NextSongKey.IsIn("5B", "4A", "5A", "6A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "6A") && NextSongKey.IsIn("6B", "5A", "6A", "7A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "7A") && NextSongKey.IsIn("7B", "6A", "7A", "8A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "8A") && NextSongKey.IsIn("8B", "7A", "8A", "9A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "9A") && NextSongKey.IsIn("9B", "8A", "9A", "10A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "10A") && NextSongKey.IsIn("10B", "9A", "10A", "11A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "11A") && NextSongKey.IsIn("11B", "10A", "11A", "12A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "12A") && NextSongKey.IsIn("12B", "11A", "12A", "1A")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "1B") && NextSongKey.IsIn("1A", "12B", "1B", "2B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "2B") && NextSongKey.IsIn("2A", "1B", "2B", "3B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "3B") && NextSongKey.IsIn("3A", "2B", "3B", "4B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "4B") && NextSongKey.IsIn("4A", "3B", "4B", "5B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "5B") && NextSongKey.IsIn("5A", "4B", "5B", "6B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "6B") && NextSongKey.IsIn("6A", "5B", "6B", "7B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "7B") && NextSongKey.IsIn("7A", "6B", "7B", "8B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "8B") && NextSongKey.IsIn("8A", "7B", "8B", "9B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "9B") && NextSongKey.IsIn("9A", "8B", "9B", "10B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "10B") && NextSongKey.IsIn("10A", "9B", "10B", "11B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "11B") && NextSongKey.IsIn("11A", "10B", "11B", "12B")) FoundNextSong = true;
+                                else if ((CurrentSongKey == "12B") && NextSongKey.IsIn("12A", "11B", "12B", "1B")) FoundNextSong = true;
                                 else
                                 {
                                     FoundNextSong = false;

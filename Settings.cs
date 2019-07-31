@@ -20,6 +20,7 @@ namespace MusicBeePlugin
         public List<JSONBridge> bridges;
         private bool isFormLoading = true;
         private bool isRescanLights = false;
+        public string[] genresdistinct = { };
 
         public Settings()
         {
@@ -32,6 +33,15 @@ namespace MusicBeePlugin
         public void Settings_Load(object sender, EventArgs e)
         {
             Trace.TraceInformation("Entering settings...");
+
+            Trace.TraceInformation("Scanning genres from the entire library started...");
+            string[] tracks = { };
+            Plugin.mbApiInterface.Library_QueryFilesEx("", out tracks);
+            string[] genres = new string[tracks.Length];
+            for (int i = 0; i < tracks.Length; i++) genres[i] = Plugin.mbApiInterface.Library_GetFileTag(tracks[i], Plugin.MetaDataType.Genre);
+            genresdistinct = genres.Distinct().ToArray();
+            Array.Sort(genresdistinct);
+            Trace.TraceInformation("Scanning genres from the entire library finished.");
 
             if (File.Exists(Plugin.LikeADJIniFile))
             { 
@@ -93,11 +103,11 @@ namespace MusicBeePlugin
                 CCB_Genres.DisplayMember = "Name";
                 CCB_Genres.ValueSeparator = ",";
 
-                for (int i = 0; i < Plugin.genresdistinct.Length; i++)
+                for (int i = 0; i < genresdistinct.Length; i++)
                 {
-                    CCBoxItem item = new CCBoxItem(Plugin.genresdistinct[i], i);
+                    CCBoxItem item = new CCBoxItem(genresdistinct[i], i);
                     CCB_Genres.Items.Add(item);
-                    bool exist = Array.Exists(Plugin.genresAllowed, element => element == Plugin.genresdistinct[i]);
+                    bool exist = Array.Exists(Plugin.genresAllowed, element => element == genresdistinct[i]);
                     if (exist) CCB_Genres.SetItemChecked(i, true);
                 }
             }
@@ -130,9 +140,9 @@ namespace MusicBeePlugin
                 CCB_Genres.DisplayMember = "Name";
                 CCB_Genres.ValueSeparator = ",";
 
-                for (int i = 0; i < Plugin.genresdistinct.Length; i++)
+                for (int i = 0; i < genresdistinct.Length; i++)
                 {
-                    CCBoxItem item = new CCBoxItem(Plugin.genresdistinct[i], i);
+                    CCBoxItem item = new CCBoxItem(genresdistinct[i], i);
                     CCB_Genres.Items.Add(item);
                 }
             }
@@ -510,7 +520,7 @@ namespace MusicBeePlugin
             }
         }
 
-        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LL_LikeADJLog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (Plugin.MusicBeeisportable) Process.Start(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
             else Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");

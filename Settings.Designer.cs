@@ -33,6 +33,7 @@
             this.BT_Cancel = new System.Windows.Forms.Button();
             this.BT_Save = new System.Windows.Forms.Button();
             this.GB_LikeADJSettings = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.TB_NumberSongsPlaylist = new System.Windows.Forms.TextBox();
             this.LB_NumberSongsPlaylist = new System.Windows.Forms.Label();
@@ -71,8 +72,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-            this.label2 = new System.Windows.Forms.Label();
+            this.LL_LikeADJLog = new System.Windows.Forms.LinkLabel();
             this.GB_LikeADJSettings.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -151,6 +151,17 @@
             this.GB_LikeADJSettings.TabIndex = 25;
             this.GB_LikeADJSettings.TabStop = false;
             this.GB_LikeADJSettings.Text = "LikeADJ settings :";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(201, 263);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(187, 9);
+            this.label2.TabIndex = 46;
+            this.label2.Text = "(available only if one or more features checked above)";
             // 
             // label1
             // 
@@ -572,27 +583,16 @@
     "res and Hue ligthing";
             this.label8.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // linkLabel1
+            // LL_LikeADJLog
             // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(396, 594);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(84, 13);
-            this.linkLabel1.TabIndex = 29;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "mb_LikeADJ.log";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel1_LinkClicked);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(201, 263);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(187, 9);
-            this.label2.TabIndex = 46;
-            this.label2.Text = "(available only if one or more features checked above)";
+            this.LL_LikeADJLog.AutoSize = true;
+            this.LL_LikeADJLog.Location = new System.Drawing.Point(396, 594);
+            this.LL_LikeADJLog.Name = "LL_LikeADJLog";
+            this.LL_LikeADJLog.Size = new System.Drawing.Size(84, 13);
+            this.LL_LikeADJLog.TabIndex = 29;
+            this.LL_LikeADJLog.TabStop = true;
+            this.LL_LikeADJLog.Text = "mb_LikeADJ.log";
+            this.LL_LikeADJLog.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LL_LikeADJLog_LinkClicked);
             // 
             // Settings
             // 
@@ -600,7 +600,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(687, 656);
             this.ControlBox = false;
-            this.Controls.Add(this.linkLabel1);
+            this.Controls.Add(this.LL_LikeADJLog);
             this.Controls.Add(this.LB_SeeLogFile);
             this.Controls.Add(this.BT_Cancel);
             this.Controls.Add(this.BT_Save);
@@ -665,7 +665,7 @@
         private System.Windows.Forms.TextBox TB_NumberSongsPlaylist;
         private System.Windows.Forms.Label LB_NumberSongsPlaylist;
         private System.Windows.Forms.CheckBox CB_SaveSongsPlaylist;
-        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.LinkLabel LL_LikeADJLog;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
     }
