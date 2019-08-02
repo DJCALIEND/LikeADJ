@@ -122,9 +122,12 @@ namespace MusicBeePlugin
         {
             LoadSettings();
 
-            if (!allowbpm || !allowharmonickey || !allowenergy || !allowratings || !allowgenres) MessageBox.Show("You must activate at least one feature (BPM, Initial Key, Energy, Track Rating or Genre) to generate a LikeADJ playlist !!!", "LikeADJ " + LikeADJVersion);
+            if (!allowbpm && !allowharmonickey && !allowenergy && !allowratings && !allowgenres) MessageBox.Show("You must activate at least one feature (BPM, Initial Key, Energy, Track Rating or Genre) to generate a LikeADJ playlist !!!", "LikeADJ " + LikeADJVersion);
             else
-            { 
+            {
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+
                 CountSongsPlaylist = 0;
                 isfirstsong = true;
                 if (isSettingsChanged) LoadSettings();
@@ -166,38 +169,38 @@ namespace MusicBeePlugin
                         break;
                     }
 
-                    if (allowbpm || allowharmonickey || allowratings || allowgenres)
+                    int NextSongIndex;
+                    string NextSongArtist, NextSongTitle, NextSongBPM, NextSongKey, NextSongEnergy, NextSongRating, NextSongGenre, NextSongURL;
+
+                    string[] CountNowPlayingFiles = { };
+                    mbApiInterface.NowPlayingList_QueryFilesEx("", out CountNowPlayingFiles);
+
+                    bool FoundNextSong = false;
+                    int NBSongsPassed = 0;
+                    do
                     {
-                        int NextSongIndex;
-                        string NextSongArtist, NextSongTitle, NextSongBPM, NextSongKey, NextSongEnergy, NextSongRating, NextSongGenre, NextSongURL;
+                        NBSongsPassed++;
 
-                        string[] CountNowPlayingFiles = { };
-                        mbApiInterface.NowPlayingList_QueryFilesEx("", out CountNowPlayingFiles);
+                        NextSongIndex = CurrentSongIndex + 1;
+                        NextSongArtist = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Artist);
+                        NextSongTitle = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.TrackTitle);
+                        NextSongBPM = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.BeatsPerMin);
+                        NextSongKey = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Custom1);
+                        NextSongEnergy = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Custom2);
+                        NextSongRating = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Rating);
+                        NextSongGenre = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Genre);
+                        NextSongURL = mbApiInterface.NowPlayingList_GetFileProperty(NextSongIndex, FilePropertyType.Url);
 
-                        bool FoundNextSong = false;
-                        int NBSongsPassed = 0;
-                        do
+                        if (NBSongsPassed >= CountNowPlayingFiles.Length)
                         {
-                            NBSongsPassed++;
+                            MessageBox.Show("Looping detected in the 'NowPlaying' playlist !!!\n\nThis means that LikeADJ is not able to found the next song and is doing an infinite loop.\n\nYou have only " + CountNowPlayingFiles.Length + " songs in this playlist.");
+                            mbApiInterface.Player_Stop();
+                            break;
+                        }
 
-                            NextSongIndex = CurrentSongIndex + 1;
-                            NextSongArtist = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Artist);
-                            NextSongTitle = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.TrackTitle);
-                            NextSongBPM = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.BeatsPerMin);
-                            NextSongKey = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Custom1);
-                            NextSongEnergy = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Custom2);
-                            NextSongRating = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Rating);
-                            NextSongGenre = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Genre);
-                            NextSongURL = mbApiInterface.NowPlayingList_GetFileProperty(NextSongIndex, FilePropertyType.Url);
-
-                            if (NBSongsPassed >= CountNowPlayingFiles.Length)
-                            {
-                                MessageBox.Show("Looping detected in the 'NowPlaying' playlist !!!\n\nThis means that LikeADJ is not able to found the next song and is doing an infinite loop.\n\nYou have only " + CountNowPlayingFiles.Length + " songs in this playlist.");
-                                mbApiInterface.Player_Stop();
-                                break;
-                            }
-
-                            if (allowgenres)
+                        if (allowgenres)
+                        {
+                            if (NextSongGenre != string.Empty)
                             {
                                 bool exist = Array.Exists(genresAllowed, element => element == NextSongGenre);
                                 if (exist) FoundNextSong = true;
@@ -209,8 +212,18 @@ namespace MusicBeePlugin
                                     continue;
                                 }
                             }
+                            else
+                            {
+                                Trace.TraceWarning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                FoundNextSong = false;
+                                mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                continue;
+                            }
+                        }
 
-                            if (allowharmonickey)
+                        if (allowharmonickey)
+                        {
+                            if (NextSongKey != string.Empty)
                             {
                                 if ((CurrentSongKey == "1A") && NextSongKey.IsIn("1B", "12A", "1A", "2A")) FoundNextSong = true;
                                 else if ((CurrentSongKey == "2A") && NextSongKey.IsIn("2B", "1A", "2A", "3A")) FoundNextSong = true;
@@ -244,8 +257,18 @@ namespace MusicBeePlugin
                                     continue;
                                 }
                             }
+                            else
+                            {
+                                Trace.TraceWarning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                FoundNextSong = false;
+                                mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                continue;
+                            }
+                        }
 
-                            if (allowbpm)
+                        if (allowbpm)
+                        {
+                            if (NextSongBPM != string.Empty)
                             {
                                 int BPMDiff = Math.Abs(int.Parse(CurrentSongBPM) - int.Parse(NextSongBPM));
 
@@ -258,8 +281,18 @@ namespace MusicBeePlugin
                                     continue;
                                 }
                             }
+                            else
+                            {
+                                Trace.TraceWarning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                FoundNextSong = false;
+                                mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                continue;
+                            }
+                        }
 
-                            if (allowenergy)
+                        if (allowenergy)
+                        {
+                            if (NextSongEnergy != string.Empty)
                             {
                                 if (int.Parse(NextSongEnergy) >= minenergy) FoundNextSong = true;
                                 else
@@ -270,8 +303,18 @@ namespace MusicBeePlugin
                                     continue;
                                 }
                             }
+                            else
+                            {
+                                Trace.TraceWarning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                FoundNextSong = false;
+                                mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                continue;
+                            }
+                        }
 
-                            if (allowratings)
+                        if (allowratings)
+                        {
+                            if (NextSongRating != string.Empty)
                             {
                                 if (int.Parse(NextSongRating) >= minrattings) FoundNextSong = true;
                                 else
@@ -282,38 +325,47 @@ namespace MusicBeePlugin
                                     continue;
                                 }
                             }
-                        } while (!FoundNextSong);
-
-                        if (NBSongsPassed >= CountNowPlayingFiles.Length) { Trace.TraceInformation("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); }
-                        else
-                        {
-                            mbPlaylistSongFiles[0] = NextSongURL;
-
-                            if (isfirstsong)
-                            {
-                                playlistName = DateTime.Now.ToString("LikeADJ dd-MM-yyyy HH-mm-ss");
-                                Trace.TraceInformation("Generating playlist " + playlistName + "...");
-                                mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);                        
-                                isfirstsong = false;
-                            }
                             else
                             {
-                                if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
-                                else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
+                                Trace.TraceWarning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                FoundNextSong = false;
+                                mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                continue;
                             }
+                        }
+                    } while (!FoundNextSong);
 
-                            CountSongsPlaylist++;
-                            message.Text = "LikeADJ - Generating playslist... " + CountSongsPlaylist + "/" + numbersongsplaylist + " songs found. Please wait...";
-                            CurrentSongIndex = NextSongIndex;
+                    if (NBSongsPassed >= CountNowPlayingFiles.Length) { Trace.TraceInformation("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); break; }
+                    else
+                    {
+                        mbPlaylistSongFiles[0] = NextSongURL;
+
+                        if (isfirstsong)
+                        {                               
+                            playlistName = DateTime.Now.ToString("LikeADJ dd-MM-yyyy HH-mm-ss");
+                            Trace.TraceInformation("Generating playlist " + playlistName + "...");
+                            mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);                        
+                            isfirstsong = false;
+                            Trace.TraceInformation("Found the fisrt Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                        }
+                        else
+                        {
+                            if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
+                            else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                             Trace.TraceInformation("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                         }
-                    }
+
+                        CountSongsPlaylist++;
+                        message.Text = "LikeADJ - Generating playslist... " + CountSongsPlaylist + "/" + numbersongsplaylist + " songs found. Please wait...";
+                        CurrentSongIndex = NextSongIndex;
+                     }
                 } while (CountSongsPlaylist < numbersongsplaylist);
 
-                mbApiInterface.NowPlayingList_Clear();
-                playlistName = oldplaylistname;
+                mbApiInterface.NowPlayingList_Clear();                
                 message.Close();
-                Trace.TraceInformation("Playlist " + playlistName + " generated successfully");
+                timer.Stop();
+                Trace.TraceInformation("Playlist " + playlistName + " generated successfully in " + timer.Elapsed.Minutes.ToString() + "m " + timer.Elapsed.Seconds.ToString() + "s");
+                playlistName = oldplaylistname;
             }
         }
 
@@ -453,86 +505,136 @@ namespace MusicBeePlugin
 
                             if (allowgenres)
                             {
-                                bool exist = Array.Exists(genresAllowed, element => element == NextSongGenre);
-                                if (exist) FoundNextSong = true;
+                                if (NextSongGenre != string.Empty)
+                                {
+                                    bool exist = Array.Exists(genresAllowed, element => element == NextSongGenre);
+                                    if (exist) FoundNextSong = true;
+                                    else
+                                    {
+                                        FoundNextSong = false;
+                                        mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                        mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
+                                        continue;
+                                    }
+                                }
                                 else
                                 {
+                                    Trace.TraceWarning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
-                                    mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
                                     continue;
                                 }
                             }
 
                             if (allowharmonickey)
                             {
-                                if ((CurrentSongKey == "1A") && NextSongKey.IsIn("1B", "12A", "1A", "2A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "2A") && NextSongKey.IsIn("2B", "1A", "2A", "3A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "3A") && NextSongKey.IsIn("3B", "2A", "3A", "4A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "4A") && NextSongKey.IsIn("4B", "3A", "4A", "5A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "5A") && NextSongKey.IsIn("5B", "4A", "5A", "6A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "6A") && NextSongKey.IsIn("6B", "5A", "6A", "7A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "7A") && NextSongKey.IsIn("7B", "6A", "7A", "8A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "8A") && NextSongKey.IsIn("8B", "7A", "8A", "9A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "9A") && NextSongKey.IsIn("9B", "8A", "9A", "10A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "10A") && NextSongKey.IsIn("10B", "9A", "10A", "11A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "11A") && NextSongKey.IsIn("11B", "10A", "11A", "12A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "12A") && NextSongKey.IsIn("12B", "11A", "12A", "1A")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "1B") && NextSongKey.IsIn("1A", "12B", "1B", "2B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "2B") && NextSongKey.IsIn("2A", "1B", "2B", "3B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "3B") && NextSongKey.IsIn("3A", "2B", "3B", "4B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "4B") && NextSongKey.IsIn("4A", "3B", "4B", "5B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "5B") && NextSongKey.IsIn("5A", "4B", "5B", "6B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "6B") && NextSongKey.IsIn("6A", "5B", "6B", "7B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "7B") && NextSongKey.IsIn("7A", "6B", "7B", "8B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "8B") && NextSongKey.IsIn("8A", "7B", "8B", "9B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "9B") && NextSongKey.IsIn("9A", "8B", "9B", "10B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "10B") && NextSongKey.IsIn("10A", "9B", "10B", "11B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "11B") && NextSongKey.IsIn("11A", "10B", "11B", "12B")) FoundNextSong = true;
-                                else if ((CurrentSongKey == "12B") && NextSongKey.IsIn("12A", "11B", "12B", "1B")) FoundNextSong = true;
+                                if (NextSongKey != string.Empty)
+                                {
+                                    if ((CurrentSongKey == "1A") && NextSongKey.IsIn("1B", "12A", "1A", "2A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "2A") && NextSongKey.IsIn("2B", "1A", "2A", "3A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "3A") && NextSongKey.IsIn("3B", "2A", "3A", "4A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "4A") && NextSongKey.IsIn("4B", "3A", "4A", "5A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "5A") && NextSongKey.IsIn("5B", "4A", "5A", "6A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "6A") && NextSongKey.IsIn("6B", "5A", "6A", "7A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "7A") && NextSongKey.IsIn("7B", "6A", "7A", "8A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "8A") && NextSongKey.IsIn("8B", "7A", "8A", "9A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "9A") && NextSongKey.IsIn("9B", "8A", "9A", "10A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "10A") && NextSongKey.IsIn("10B", "9A", "10A", "11A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "11A") && NextSongKey.IsIn("11B", "10A", "11A", "12A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "12A") && NextSongKey.IsIn("12B", "11A", "12A", "1A")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "1B") && NextSongKey.IsIn("1A", "12B", "1B", "2B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "2B") && NextSongKey.IsIn("2A", "1B", "2B", "3B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "3B") && NextSongKey.IsIn("3A", "2B", "3B", "4B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "4B") && NextSongKey.IsIn("4A", "3B", "4B", "5B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "5B") && NextSongKey.IsIn("5A", "4B", "5B", "6B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "6B") && NextSongKey.IsIn("6A", "5B", "6B", "7B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "7B") && NextSongKey.IsIn("7A", "6B", "7B", "8B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "8B") && NextSongKey.IsIn("8A", "7B", "8B", "9B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "9B") && NextSongKey.IsIn("9A", "8B", "9B", "10B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "10B") && NextSongKey.IsIn("10A", "9B", "10B", "11B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "11B") && NextSongKey.IsIn("11A", "10B", "11B", "12B")) FoundNextSong = true;
+                                    else if ((CurrentSongKey == "12B") && NextSongKey.IsIn("12A", "11B", "12B", "1B")) FoundNextSong = true;
+                                    else
+                                    {
+                                        FoundNextSong = false;
+                                        mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                        mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
+                                        continue;
+                                    }
+                                }
                                 else
                                 {
+                                    Trace.TraceWarning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
-                                    mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
                                     continue;
                                 }
                             }
 
                             if (allowbpm)
                             {
-                                int BPMDiff = Math.Abs(int.Parse(CurrentSongBPM) - int.Parse(NextSongBPM));
+                                if (NextSongBPM != string.Empty)
+                                {
+                                    int BPMDiff = Math.Abs(int.Parse(CurrentSongBPM) - int.Parse(NextSongBPM));
 
-                                if (BPMDiff < DiffBPM) FoundNextSong = true;
+                                    if (BPMDiff < DiffBPM) FoundNextSong = true;
+                                    else
+                                    {
+                                        FoundNextSong = false;
+                                        mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                        mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
+                                        continue;
+                                    }
+                                }
                                 else
                                 {
+                                    Trace.TraceWarning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
-                                    mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
                                     continue;
                                 }
                             }
 
                             if (allowenergy)
                             {
-                                if (int.Parse(NextSongEnergy) >= minenergy) FoundNextSong = true;
+                                if (NextSongEnergy != string.Empty)
+                                {
+                                    if (int.Parse(NextSongEnergy) >= minenergy) FoundNextSong = true;
+                                    else
+                                    {
+                                        FoundNextSong = false;
+                                        mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                        mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
+                                        continue;
+                                    }
+                                }
                                 else
                                 {
+                                    Trace.TraceWarning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
-                                    mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
                                     continue;
                                 }
                             }
 
                             if (allowratings)
                             {
-                                if (int.Parse(NextSongRating) >= minrattings) FoundNextSong = true;
+                                if (NextSongRating != string.Empty)
+                                {
+                                    if (int.Parse(NextSongRating) >= minrattings) FoundNextSong = true;
+                                    else
+                                    {
+                                        FoundNextSong = false;
+                                        mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                        mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
+                                        continue;
+                                    }
+                                }
                                 else
                                 {
+                                    Trace.TraceWarning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
-                                    mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
                                     continue;
                                 }
                             }
@@ -544,21 +646,20 @@ namespace MusicBeePlugin
                             if (savesongsplaylist)
                             {
                                 bool playlistexist;
+                                mbPlaylistSongFiles[0] = CurrentSongURL;
 
                                 if (MusicBeeisportable) playlistexist = File.Exists(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp");
                                 else playlistexist = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp");
 
                                 if (isfirstsong || !playlistexist)
                                 {
-                                    Trace.TraceInformation("Creating playlist " + playlistName + "...");
-                                    mbPlaylistSongFiles[0] = CurrentSongURL;
+                                    Trace.TraceInformation("Creating playlist " + playlistName + "...");                                 
                                     mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
                                     isfirstsong = false;
                                 }
                                 else
                                 {
                                     Trace.TraceInformation("Adding song to playlist " + playlistName + "...");
-                                    mbPlaylistSongFiles[0] = CurrentSongURL;
                                     if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                                     else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                                 }
@@ -611,14 +712,8 @@ namespace MusicBeePlugin
             }
             catch
             {
-                if (MusicBeeisportable)
-                {
-                    if (!File.Exists(Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini")) Trace.TraceInformation("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found.");
-                }
-                else
-                {
-                    if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini")) Trace.TraceInformation("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found.");
-                }
+                if (MusicBeeisportable) if (!File.Exists(Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini")) Trace.TraceInformation("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found.");
+                else if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini")) Trace.TraceInformation("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found.");
             }
         }
 
