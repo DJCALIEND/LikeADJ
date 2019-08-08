@@ -530,9 +530,10 @@
             this.CB_AllowInitialKey.Location = new System.Drawing.Point(27, 83);
             this.CB_AllowInitialKey.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.CB_AllowInitialKey.Name = "CB_AllowInitialKey";
-            this.CB_AllowInitialKey.Size = new System.Drawing.Size(319, 17);
+            this.CB_AllowInitialKey.Size = new System.Drawing.Size(404, 17);
             this.CB_AllowInitialKey.TabIndex = 10;
-            this.CB_AllowInitialKey.Text = "Allow Auto Mix according to \'Initial Key\' (Camelot notation only)";
+            this.CB_AllowInitialKey.Text = "Allow Auto Mix according to \'Initial Key\' (Camelot and/or Open Key notation only)" +
+    "";
             this.CB_AllowInitialKey.UseVisualStyleBackColor = true;
             // 
             // CB_AllowBPM

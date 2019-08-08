@@ -72,3 +72,4 @@ D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\LikeADJ.csproj.CoreCompileInputs.cache
 D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\LikeADJ.csproj.Fody.CopyLocal.cache
 D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\LikeADJ.csproj.CopyComplete
 D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\mb_LikeADJ.dll
+D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csprojAssemblyReference.cache
