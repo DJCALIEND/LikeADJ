@@ -112,10 +112,17 @@ namespace MusicBeePlugin
             else Trace.TraceInformation("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
 
             mbApiInterface.MB_AddMenuItem("context.Main/Generate a LikeADJ playlist with all songs in your library", "LikeADJ", GeneratePlaylist);
+            mbApiInterface.MB_AddMenuItem("context.Main/View the mb_LikeADJ.log", "LikeADJ", ViewLogFile);
             mbApiInterface.MB_AddMenuItem("context.Main/Configure LikeADJ plugin", "LikeADJ", ConfigurePlugin);
 
             LoadSettings();
             return about;
+        }
+
+        public static void ViewLogFile(object sender, EventArgs e)
+        {
+            if (Plugin.MusicBeeisportable) Process.Start(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
+            else Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");
         }
 
         public void GeneratePlaylist(object sender, EventArgs e)

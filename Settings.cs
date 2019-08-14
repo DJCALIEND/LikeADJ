@@ -522,8 +522,7 @@ namespace MusicBeePlugin
 
         private void LL_LikeADJLog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (Plugin.MusicBeeisportable) Process.Start(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
-            else Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");
+            Plugin.ViewLogFile(sender, e);
         }
     }
 }
