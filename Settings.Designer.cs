@@ -39,8 +39,10 @@
             this.LB_NumberSongsPlaylist = new System.Windows.Forms.Label();
             this.CB_SaveSongsPlaylist = new System.Windows.Forms.CheckBox();
             this.LB_BrightnessLightsRange = new System.Windows.Forms.Label();
+            this.RS_BrightnessLightsRange = new MusicBeePlugin.SelectionRangeSlider();
             this.LB_SelectGenres = new System.Windows.Forms.Label();
             this.CB_AllowGenres = new System.Windows.Forms.CheckBox();
+            this.CCB_Genres = new MusicBeePlugin.CheckedComboBox();
             this.TB_MinEnergy = new System.Windows.Forms.ComboBox();
             this.LB_MinimumEnergy = new System.Windows.Forms.Label();
             this.CB_AllowEnergy = new System.Windows.Forms.CheckBox();
@@ -71,8 +73,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.LL_LikeADJLog = new System.Windows.Forms.LinkLabel();
-            this.RS_BrightnessLightsRange = new MusicBeePlugin.SelectionRangeSlider();
-            this.CCB_Genres = new MusicBeePlugin.CheckedComboBox();
             this.GB_LikeADJSettings.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -215,6 +215,19 @@
             this.LB_BrightnessLightsRange.TabIndex = 38;
             this.LB_BrightnessLightsRange.Text = "Brightness range of lights (on beat detection) :";
             // 
+            // RS_BrightnessLightsRange
+            // 
+            this.RS_BrightnessLightsRange.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.RS_BrightnessLightsRange.Location = new System.Drawing.Point(453, 455);
+            this.RS_BrightnessLightsRange.Max = 255;
+            this.RS_BrightnessLightsRange.Min = 0;
+            this.RS_BrightnessLightsRange.Name = "RS_BrightnessLightsRange";
+            this.RS_BrightnessLightsRange.SelectedMax = 255;
+            this.RS_BrightnessLightsRange.SelectedMin = 0;
+            this.RS_BrightnessLightsRange.Size = new System.Drawing.Size(287, 20);
+            this.RS_BrightnessLightsRange.TabIndex = 37;
+            this.RS_BrightnessLightsRange.Value = 50;
+            // 
             // LB_SelectGenres
             // 
             this.LB_SelectGenres.AutoSize = true;
@@ -235,6 +248,21 @@
             this.CB_AllowGenres.TabIndex = 35;
             this.CB_AllowGenres.Text = "Allow Auto Mix according to Genres";
             this.CB_AllowGenres.UseVisualStyleBackColor = true;
+            // 
+            // CCB_Genres
+            // 
+            this.CCB_Genres.CausesValidation = false;
+            this.CCB_Genres.CheckOnClick = true;
+            this.CCB_Genres.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.CCB_Genres.DropDownHeight = 1;
+            this.CCB_Genres.FormattingEnabled = true;
+            this.CCB_Genres.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.CCB_Genres.IntegralHeight = false;
+            this.CCB_Genres.Location = new System.Drawing.Point(142, 229);
+            this.CCB_Genres.Name = "CCB_Genres";
+            this.CCB_Genres.Size = new System.Drawing.Size(306, 21);
+            this.CCB_Genres.TabIndex = 34;
+            this.CCB_Genres.ValueSeparator = ",";
             // 
             // TB_MinEnergy
             // 
@@ -547,13 +575,13 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(119, 9);
+            this.label8.Location = new System.Drawing.Point(94, 9);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(489, 13);
+            this.label8.Size = new System.Drawing.Size(560, 13);
             this.label8.TabIndex = 22;
-            this.label8.Text = "Auto Mix your songs according to BPM, Initial Key (Camelot), Energy, Ratings, Gen" +
-    "res and Hue ligthing";
+            this.label8.Text = "Auto Mix your songs according to BPM, Initial Key (Camelot and Open Key), Energy," +
+    " Ratings, Genres and Hue ligthing";
             this.label8.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // LL_LikeADJLog
@@ -566,34 +594,6 @@
             this.LL_LikeADJLog.TabStop = true;
             this.LL_LikeADJLog.Text = "mb_LikeADJ.log";
             this.LL_LikeADJLog.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LL_LikeADJLog_LinkClicked);
-            // 
-            // RS_BrightnessLightsRange
-            // 
-            this.RS_BrightnessLightsRange.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.RS_BrightnessLightsRange.Location = new System.Drawing.Point(453, 455);
-            this.RS_BrightnessLightsRange.Max = 255;
-            this.RS_BrightnessLightsRange.Min = 0;
-            this.RS_BrightnessLightsRange.Name = "RS_BrightnessLightsRange";
-            this.RS_BrightnessLightsRange.SelectedMax = 255;
-            this.RS_BrightnessLightsRange.SelectedMin = 0;
-            this.RS_BrightnessLightsRange.Size = new System.Drawing.Size(287, 20);
-            this.RS_BrightnessLightsRange.TabIndex = 37;
-            this.RS_BrightnessLightsRange.Value = 50;
-            // 
-            // CCB_Genres
-            // 
-            this.CCB_Genres.CausesValidation = false;
-            this.CCB_Genres.CheckOnClick = true;
-            this.CCB_Genres.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.CCB_Genres.DropDownHeight = 1;
-            this.CCB_Genres.FormattingEnabled = true;
-            this.CCB_Genres.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.CCB_Genres.IntegralHeight = false;
-            this.CCB_Genres.Location = new System.Drawing.Point(142, 229);
-            this.CCB_Genres.Name = "CCB_Genres";
-            this.CCB_Genres.Size = new System.Drawing.Size(306, 21);
-            this.CCB_Genres.TabIndex = 34;
-            this.CCB_Genres.ValueSeparator = ",";
             // 
             // Settings
             // 
