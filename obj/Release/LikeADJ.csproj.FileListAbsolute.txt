@@ -53,15 +53,6 @@ D:\C#\LikeADJ\obj\Release\LikeADJ.csproj.CoreCompileInputs.cache
 D:\C#\LikeADJ\obj\Release\LikeADJ.csproj.CopyComplete
 D:\C#\LikeADJ\obj\Release\mb_LikeADJ.dll
 D:\C#\LikeADJ\obj\Release\LikeADJ.csprojAssemblyReference.cache
-D:\DJCOD\9 - C#\LikeADJ\bin\Release\mb_LikeADJ.dll
-D:\DJCOD\9 - C#\LikeADJ\bin\Release\Newtonsoft.Json.xml
-D:\DJCOD\9 - C#\LikeADJ\obj\Release\MusicBeePlugin.Message.resources
-D:\DJCOD\9 - C#\LikeADJ\obj\Release\MusicBeePlugin.Settings.resources
-D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csproj.GenerateResource.cache
-D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csproj.CoreCompileInputs.cache
-D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csproj.CopyComplete
-D:\DJCOD\9 - C#\LikeADJ\obj\Release\mb_LikeADJ.dll
-D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csproj.Fody.CopyLocal.cache
 D:\DJCOD\9 - C#\LikeADJOLD\bin\Release\mb_LikeADJ.dll
 D:\DJCOD\9 - C#\LikeADJOLD\bin\Release\Newtonsoft.Json.xml
 D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\LikeADJ.csprojAssemblyReference.cache
@@ -72,4 +63,12 @@ D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\LikeADJ.csproj.CoreCompileInputs.cache
 D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\LikeADJ.csproj.Fody.CopyLocal.cache
 D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\LikeADJ.csproj.CopyComplete
 D:\DJCOD\9 - C#\LikeADJOLD\obj\Release\mb_LikeADJ.dll
-D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csprojAssemblyReference.cache
+D:\DJCOD\9 - C#\LikeADJ\bin\Release\mb_LikeADJ.dll
+D:\DJCOD\9 - C#\LikeADJ\bin\Release\Newtonsoft.Json.xml
+D:\DJCOD\9 - C#\LikeADJ\obj\Release\MusicBeePlugin.Message.resources
+D:\DJCOD\9 - C#\LikeADJ\obj\Release\MusicBeePlugin.Settings.resources
+D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csproj.GenerateResource.cache
+D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csproj.CoreCompileInputs.cache
+D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csproj.Fody.CopyLocal.cache
+D:\DJCOD\9 - C#\LikeADJ\obj\Release\LikeADJ.csproj.CopyComplete
+D:\DJCOD\9 - C#\LikeADJ\obj\Release\mb_LikeADJ.dll
