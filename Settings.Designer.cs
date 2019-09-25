@@ -79,7 +79,7 @@
             // LB_SeeLogFile
             // 
             this.LB_SeeLogFile.AutoSize = true;
-            this.LB_SeeLogFile.Location = new System.Drawing.Point(193, 594);
+            this.LB_SeeLogFile.Location = new System.Drawing.Point(244, 594);
             this.LB_SeeLogFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LB_SeeLogFile.Name = "LB_SeeLogFile";
             this.LB_SeeLogFile.Size = new System.Drawing.Size(206, 13);
@@ -89,7 +89,7 @@
             // 
             // BT_Cancel
             // 
-            this.BT_Cancel.Location = new System.Drawing.Point(345, 612);
+            this.BT_Cancel.Location = new System.Drawing.Point(398, 612);
             this.BT_Cancel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.BT_Cancel.Name = "BT_Cancel";
             this.BT_Cancel.Size = new System.Drawing.Size(112, 35);
@@ -100,7 +100,7 @@
             // 
             // BT_Save
             // 
-            this.BT_Save.Location = new System.Drawing.Point(212, 612);
+            this.BT_Save.Location = new System.Drawing.Point(258, 612);
             this.BT_Save.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.BT_Save.Name = "BT_Save";
             this.BT_Save.Size = new System.Drawing.Size(112, 35);
@@ -147,7 +147,7 @@
             this.GB_LikeADJSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.GB_LikeADJSettings.Name = "GB_LikeADJSettings";
             this.GB_LikeADJSettings.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.GB_LikeADJSettings.Size = new System.Drawing.Size(680, 484);
+            this.GB_LikeADJSettings.Size = new System.Drawing.Size(748, 484);
             this.GB_LikeADJSettings.TabIndex = 25;
             this.GB_LikeADJSettings.TabStop = false;
             this.GB_LikeADJSettings.Text = "LikeADJ settings :";
@@ -224,7 +224,7 @@
             this.RS_BrightnessLightsRange.Name = "RS_BrightnessLightsRange";
             this.RS_BrightnessLightsRange.SelectedMax = 255;
             this.RS_BrightnessLightsRange.SelectedMin = 0;
-            this.RS_BrightnessLightsRange.Size = new System.Drawing.Size(219, 20);
+            this.RS_BrightnessLightsRange.Size = new System.Drawing.Size(287, 20);
             this.RS_BrightnessLightsRange.TabIndex = 37;
             this.RS_BrightnessLightsRange.Value = 50;
             // 
@@ -360,7 +360,7 @@
             this.LV_Lights.Location = new System.Drawing.Point(454, 34);
             this.LV_Lights.Name = "LV_Lights";
             this.LV_Lights.ShowGroups = false;
-            this.LV_Lights.Size = new System.Drawing.Size(218, 397);
+            this.LV_Lights.Size = new System.Drawing.Size(286, 397);
             this.LV_Lights.TabIndex = 26;
             this.LV_Lights.UseCompatibleStateImageBehavior = false;
             this.LV_Lights.View = System.Windows.Forms.View.Details;
@@ -553,7 +553,7 @@
             this.textBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(681, 33);
+            this.textBox1.Size = new System.Drawing.Size(748, 33);
             this.textBox1.TabIndex = 24;
             this.textBox1.TabStop = false;
             this.textBox1.Text = resources.GetString("textBox1.Text");
@@ -563,7 +563,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(44, 22);
+            this.label7.Location = new System.Drawing.Point(72, 22);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(605, 13);
@@ -575,19 +575,19 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(91, 9);
+            this.label8.Location = new System.Drawing.Point(94, 9);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(489, 13);
+            this.label8.Size = new System.Drawing.Size(560, 13);
             this.label8.TabIndex = 22;
-            this.label8.Text = "Auto Mix your songs according to BPM, Initial Key (Camelot), Energy, Ratings, Gen" +
-    "res and Hue ligthing";
+            this.label8.Text = "Auto Mix your songs according to BPM, Initial Key (Camelot and Open Key), Energy," +
+    " Ratings, Genres and Hue ligthing";
             this.label8.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // LL_LikeADJLog
             // 
             this.LL_LikeADJLog.AutoSize = true;
-            this.LL_LikeADJLog.Location = new System.Drawing.Point(396, 594);
+            this.LL_LikeADJLog.Location = new System.Drawing.Point(444, 594);
             this.LL_LikeADJLog.Name = "LL_LikeADJLog";
             this.LL_LikeADJLog.Size = new System.Drawing.Size(84, 13);
             this.LL_LikeADJLog.TabIndex = 29;
@@ -599,7 +599,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(687, 656);
+            this.ClientSize = new System.Drawing.Size(755, 656);
             this.ControlBox = false;
             this.Controls.Add(this.LL_LikeADJLog);
             this.Controls.Add(this.LB_SeeLogFile);

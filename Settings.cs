@@ -316,7 +316,7 @@ namespace MusicBeePlugin
                     if (exist) item.Checked = true;
                     item.SubItems.Add(Plugin.allLights[i].Name);
                     LV_Lights.Items.Add(item);
-                    Trace.TraceInformation("Found light : " + (i + 1) + " - Index : " + Plugin.lightIndices[i].ToString() + " - " + Plugin.allLights[i].Name + " [Type : " + Plugin.allLights[i].Type + " - Model : " + Plugin.allLights[i].Modelid + " - Firmware : " + Plugin.allLights[i].Swversion + " ]");
+                    Trace.TraceInformation("Found light : " + (i + 1) + " - Index : " + Plugin.lightIndices[i].ToString() + " - " + Plugin.allLights[i].Name + " [Type : " + Plugin.allLights[i].Type + " - Model : " + Plugin.allLights[i].Modelid + " - Firmware : " + Plugin.allLights[i].Swversion + "]");
                     i++;
                 }
 
@@ -522,8 +522,7 @@ namespace MusicBeePlugin
 
         private void LL_LikeADJLog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (Plugin.MusicBeeisportable) Process.Start(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
-            else Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");
+            Plugin.ViewLogFile(sender, e);
         }
     }
 }
