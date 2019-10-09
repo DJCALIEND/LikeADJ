@@ -190,6 +190,7 @@ namespace MusicBeePlugin
             Plugin.ini.Write("DISABLELOGGING", CB_DisableLogging.Checked.ToString(), "HUE");
 
             Plugin.isSettingsChanged = true;
+            Plugin.LoadSettings();
             Close();
         }
 

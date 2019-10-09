@@ -38,25 +38,25 @@ namespace MusicBeePlugin
 
         public static MusicBeeApiInterface mbApiInterface;
         private readonly PluginInfo about = new PluginInfo();
-        Settings settings= new Settings();
+        public static Settings settings= new Settings();
         static Message message = new Message();
         public static LogFile monLogListener;
         public static string LikeADJVersion, LikeADJIniFile;
         public static bool isSettingsChanged = false;
-        bool allowbpm, allowharmonickey, allowenergy, allowratings, allowgenres, savesongsplaylist, allowhue;
+        public static bool allowbpm, allowharmonickey, allowenergy, allowratings, allowgenres, savesongsplaylist, allowhue;
         public static bool disablelogging, MusicBeeisportable;
-        int DiffBPM, minenergy, minrattings, numbersongsplaylist;
+        public static int DiffBPM, minenergy, minrattings, numbersongsplaylist;
         public static int brightnesslightmin, brightnesslightmax;
-        string changelightswhen, BeatDetectionEvery;
+        public static string changelightswhen, BeatDetectionEvery;
         public static volatile string APIKey;
         public static Hue theHueBridge = new Hue();
         public static HueLight[] allLights;
         public static int[] lightIndices = new int[20];
         public static int[] lightIndicesAllowed = new int[20];
         public static readonly Random rand = new Random();
-        readonly System.Timers.Timer LikeADJTimerBeatDetectedSimple = new System.Timers.Timer();
-        readonly System.Timers.Timer LikeADJTimerBeatDetectedSubBand = new System.Timers.Timer();
-        readonly System.Timers.Timer LikeADJTimerRedAlertEndOfSong = new System.Timers.Timer();
+        public static readonly System.Timers.Timer LikeADJTimerBeatDetectedSimple = new System.Timers.Timer();
+        public static readonly System.Timers.Timer LikeADJTimerBeatDetectedSubBand = new System.Timers.Timer();
+        public static readonly System.Timers.Timer LikeADJTimerRedAlertEndOfSong = new System.Timers.Timer();
         public static IniFile ini;
         public static string[] genresAllowed;
         public string playlistName = "LikeADJ History "+ DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss");
@@ -418,9 +418,6 @@ namespace MusicBeePlugin
                     }
                     break;
                 case NotificationType.TrackChanged:                   
-                    LikeADJTimerBeatDetectedSimple.Stop();
-                    LikeADJTimerBeatDetectedSubBand.Stop();
-                    LikeADJTimerRedAlertEndOfSong.Stop();
 
                     if (isSettingsChanged) LoadSettings();
 
@@ -459,28 +456,6 @@ namespace MusicBeePlugin
                                 LightChangeColorandBrightness(lightIndicesAllowed[i], color.R, color.G, color.B, rand.Next(1, 255));
                             }
                         }
-                    }
-
-                    if (allowhue && APIKey != string.Empty && changelightswhen == "Beat is detected (Simple)")
-                    {
-                        Double.TryParse(BeatDetectionEvery, out Double Interval);
-                        LikeADJTimerBeatDetectedSimple.Interval = Interval;
-                        LikeADJTimerBeatDetectedSimple.Start();                       
-                    }
-
-                    if (allowhue && APIKey != string.Empty && changelightswhen == "Beat is detected (SubBand)")
-                    {
-                        BeatDetection.SubBands = new BeatDetection.SubBand[64];
-                        for (int i = 0; i < BeatDetection.SubBands.Length; i++) { BeatDetection.SubBands[i] = new BeatDetection.SubBand(i + 1); }
-                        Double.TryParse(BeatDetectionEvery, out Double Interval);
-                        LikeADJTimerBeatDetectedSubBand.Interval = Interval;
-                        LikeADJTimerBeatDetectedSubBand.Start();
-                    }
-
-                    if (allowhue && APIKey != string.Empty && changelightswhen == "15s before ending (flashing RED) & Track change")
-                    {
-                        LikeADJTimerRedAlertEndOfSong.Interval = 500;
-                        LikeADJTimerRedAlertEndOfSong.Start();
                     }
                     
                     if (allowbpm || allowharmonickey || allowratings || allowgenres)
@@ -686,7 +661,7 @@ namespace MusicBeePlugin
             }
         }
 
-        private void LoadSettings()
+        public static void LoadSettings()
         {
             try
             {
@@ -717,11 +692,39 @@ namespace MusicBeePlugin
                 BeatDetectionEvery = ini.Read("BEATDETECTIONEVERY", "HUE");
                 Boolean.TryParse(ini.Read("DISABLELOGGING", "HUE"), out disablelogging);
 
-                Trace.TraceInformation("Settings : ALLOWBPM=" + allowbpm + "[Max Diff " + DiffBPM + "] - ALLOWHARMONICKEY=" + allowharmonickey + " - ALLOWENERGY = " + allowenergy + "[Min " + minenergy + "] - ALLOWRATINGS=" + allowratings + "[Min " + minrattings + "] - ALLOWGENRES=" + allowgenres + "[" + genresallowed + "] - SAVESONGSPLAYLIST=" + savesongsplaylist + " - NUMBERSONGSPLAYLIST=" + numbersongsplaylist +" - ALLOWHUE=" + allowhue + "[Change lights when " + changelightswhen + "] - LIGHTSALLOWED=" + ini.Read("LIGHTSALLOWED", "HUE") + " - BRIGHTNESSLIGHTSMIN=" + brightnesslightmin + " - BRIGHTNESSLIGHTSMAX=" + brightnesslightmax + " - BEATDETECTIONEVERY=" + BeatDetectionEvery + "ms - DISABLELOGGING=" + disablelogging);
+                Trace.TraceInformation("Settings : ALLOWBPM=" + allowbpm + "[Max Diff " + DiffBPM + "] - ALLOWHARMONICKEY=" + allowharmonickey + " - ALLOWENERGY = " + allowenergy + "[Min " + minenergy + "] - ALLOWRATINGS=" + allowratings + "[Min " + minrattings + "] - ALLOWGENRES=" + allowgenres + "[" + genresallowed + "] - SAVESONGSPLAYLIST=" + savesongsplaylist + " - NUMBERSONGSPLAYLIST=" + numbersongsplaylist + " - ALLOWHUE=" + allowhue + "[Change lights when " + changelightswhen + "] - LIGHTSALLOWED=" + ini.Read("LIGHTSALLOWED", "HUE") + " - BRIGHTNESSLIGHTSMIN=" + brightnesslightmin + " - BRIGHTNESSLIGHTSMAX=" + brightnesslightmax + " - BEATDETECTIONEVERY=" + BeatDetectionEvery + "ms - DISABLELOGGING=" + disablelogging);
                 isSettingsChanged = false;
 
                 if (allowhue && APIKey != string.Empty) { settings.InitBridge(); }
                 else if (allowhue && APIKey == string.Empty) MessageBox.Show("Hue is allowed but I can't found API Key !!!!");
+
+                if (allowhue && APIKey != string.Empty && changelightswhen == "Beat is detected (Simple)")
+                {
+                    Double.TryParse(BeatDetectionEvery, out Double Interval);
+                    LikeADJTimerBeatDetectedSimple.Interval = Interval;
+                    Trace.TraceInformation("Starting timer for 'Beat is detected (Simple)' : " + Interval + "ms...");
+                    LikeADJTimerBeatDetectedSimple.Start();
+                }
+                else if (LikeADJTimerBeatDetectedSimple.Enabled) { LikeADJTimerBeatDetectedSimple.Stop(); Trace.TraceInformation("Timer for 'Beat is detected (Simple)' stopped."); }
+
+                if (allowhue && APIKey != string.Empty && changelightswhen == "Beat is detected (SubBand)")
+                {
+                    BeatDetection.SubBands = new BeatDetection.SubBand[64];
+                    for (int i = 0; i < BeatDetection.SubBands.Length; i++) { BeatDetection.SubBands[i] = new BeatDetection.SubBand(i + 1); }
+                    Double.TryParse(BeatDetectionEvery, out Double Interval);
+                    LikeADJTimerBeatDetectedSubBand.Interval = Interval;
+                    Trace.TraceInformation("Starting timer for 'Beat is detected (SubBand)' : " + Interval + "ms...");
+                    LikeADJTimerBeatDetectedSubBand.Start();
+                }
+                else if (LikeADJTimerBeatDetectedSubBand.Enabled) { LikeADJTimerBeatDetectedSubBand.Stop(); Trace.TraceInformation("Timer for 'Beat is detected (SubBand)' stopped.");}
+
+                if (allowhue && APIKey != string.Empty && changelightswhen == "15s before ending (flashing RED) & Track change")
+                {
+                    LikeADJTimerRedAlertEndOfSong.Interval = 500;
+                    Trace.TraceInformation("Starting timer for '15s before ending (flashing RED) & Track change' : " + LikeADJTimerRedAlertEndOfSong.Interval + "ms...");
+                    LikeADJTimerRedAlertEndOfSong.Start();
+                }
+                else if (LikeADJTimerRedAlertEndOfSong.Enabled) { LikeADJTimerRedAlertEndOfSong.Stop(); Trace.TraceInformation("Timer for '15s before ending (flashing RED) & Track change' stopped."); }
             }
             catch
             {
