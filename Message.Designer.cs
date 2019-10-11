@@ -34,7 +34,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(369, 0);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(410, 0);
             this.ControlBox = false;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

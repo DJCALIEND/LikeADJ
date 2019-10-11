@@ -466,10 +466,15 @@ namespace MusicBeePlugin
                         string[] CountNowPlayingFiles = { };
                         mbApiInterface.NowPlayingList_QueryFilesEx("", out CountNowPlayingFiles);
 
+                        message = new Message();
+                        message.Show();
+
                         bool FoundNextSong = false;
                         int NBSongsPassed=0;
                         do
                         {
+                            message.Text = "LikeADJ - Trying to find next song... "+ NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait...";
+
                             NBSongsPassed++;
 
                             NextSongIndex = CurrentSongIndex + 1;
@@ -627,6 +632,8 @@ namespace MusicBeePlugin
                                 }
                             }
                         } while (!FoundNextSong);
+
+                        message.Close(); 
 
                         if (NBSongsPassed >= CountNowPlayingFiles.Length) { Trace.TraceInformation("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); }
                         else
