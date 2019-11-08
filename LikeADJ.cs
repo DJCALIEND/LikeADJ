@@ -40,7 +40,7 @@ namespace MusicBeePlugin
         private readonly PluginInfo about = new PluginInfo();
         public static Settings settings= new Settings();
         static Message message = new Message();
-        public static LogFile monLogListener;
+        public static SimpleLogger Logger;
         public static string LikeADJVersion, LikeADJIniFile;
         public static bool isSettingsChanged = false;
         public static bool allowbpm, allowharmonickey, allowenergy, allowratings, allowgenres, savesongsplaylist, allowhue;
@@ -63,14 +63,14 @@ namespace MusicBeePlugin
         public string[] mbPlaylistSongFiles = new string[1];
         public bool isfirstsong = true;
         public int CountSongsPlaylist;
-
+     
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
             mbApiInterface = new MusicBeeApiInterface();
             mbApiInterface.Initialise(apiInterfacePtr);
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "LikeADJ";
-            about.Description = "Auto Mix your songs according to \nBPM, Initial Key (Camelot), Energy, Track Rating, Genre and Hue lighting";
+            about.Description = "Auto Mix your songs according to \nBPM, Initial Key, Energy, Track Rating, Genre and Hue lighting";
             about.Author = "DJC👽D - marc.giraudou@outlook.com - 2019";
             about.TargetApplication = "";
             about.Type = PluginType.General;
@@ -81,37 +81,34 @@ namespace MusicBeePlugin
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
             about.ConfigurationPanelHeight = 0;
-
+          
             if (Application.StartupPath != @"C:\Program Files (x86)\MusicBee") MusicBeeisportable = true;
             else MusicBeeisportable = false;
 
             if (MusicBeeisportable)
             {
                 File.Delete(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
-                monLogListener = new LogFile(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log") { WriteDateInfo = true };
+                Logger = new SimpleLogger(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
                 LikeADJIniFile = Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini";
             }
             else
             {
                 File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");
-                monLogListener = new LogFile(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log") { WriteDateInfo = true };
+                Logger = new SimpleLogger(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");
                 LikeADJIniFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini";               
             }
 
             ini = new IniFile(LikeADJIniFile);
-
-            Trace.Listeners.Add(monLogListener);
-            Trace.AutoFlush = true;
 
             LikeADJTimerBeatDetectedSimple.Elapsed += new ElapsedEventHandler(BeatDetection.IsBeatDetectedSimple);
             LikeADJTimerBeatDetectedSubBand.Elapsed += new ElapsedEventHandler(BeatDetection.IsBeatDetectedSubBand);
             LikeADJTimerRedAlertEndOfSong.Elapsed += new ElapsedEventHandler(RedAlertEndOfSong);
 
             LikeADJVersion = about.VersionMajor + "." + about.VersionMinor + "." + about.Revision;
-            Trace.TraceInformation("Starting LikeADJ " + LikeADJVersion + " RC plugin by DJC👽D...");
+            Logger.Info("Starting LikeADJ " + LikeADJVersion + " RC plugin by DJC👽D...");
 
-            if (MusicBeeisportable) Trace.TraceInformation("MusicBee is portable. Using [" + Application.StartupPath + "] to save LikeADJ files.");
-            else Trace.TraceInformation("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
+            if (MusicBeeisportable) Logger.Info("MusicBee is portable. Using [" + Application.StartupPath + "] to save LikeADJ files.");
+            else Logger.Info("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
 
             mbApiInterface.MB_AddMenuItem("context.Main/Generate a LikeADJ playlist with all songs in your library", "LikeADJ", GeneratePlaylist);
             mbApiInterface.MB_AddMenuItem("context.Main/View the mb_LikeADJ.log", "LikeADJ", ViewLogFile);
@@ -123,8 +120,13 @@ namespace MusicBeePlugin
 
         public static void ViewLogFile(object sender, EventArgs e)
         {
-            if (Plugin.MusicBeeisportable) Process.Start(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
-            else Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");
+            string logfile;
+
+            if (Plugin.MusicBeeisportable) logfile=Application.StartupPath + "\\Plugins\\mb_LikeADJ.log";
+            else logfile=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log";
+
+            LogMonitor.LogMonitor f2 = new LogMonitor.LogMonitor(logfile);
+            f2.Show();
         }
 
         public void GeneratePlaylist(object sender, EventArgs e)
@@ -174,7 +176,7 @@ namespace MusicBeePlugin
                         if ((CurrentSongGenre == string.Empty) && allowgenres) { message += "- 'Genre' tag is empty but Genres Auto Mix is allowed.\n"; }
                         message += "\nPlease uncheck unwanted features in the plugin configuration or select another first song.";
                         MessageBox.Show(message, "LikeADJ " + LikeADJVersion);
-                        Trace.TraceInformation("Player stopped because first song has some tags required not filled.");
+                        Logger.Info("Player stopped because first song has some tags required not filled.");
                         break;
                     }
 
@@ -223,7 +225,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Trace.TraceWarning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -268,7 +270,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Trace.TraceWarning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -294,7 +296,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Trace.TraceWarning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -316,7 +318,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Trace.TraceWarning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -338,7 +340,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Trace.TraceWarning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -346,7 +348,7 @@ namespace MusicBeePlugin
                         }
                     } while (!FoundNextSong);
 
-                    if (NBSongsPassed >= CountNowPlayingFiles.Length) { Trace.TraceInformation("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); break; }
+                    if (NBSongsPassed >= CountNowPlayingFiles.Length) { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); break; }
                     else
                     {
                         mbPlaylistSongFiles[0] = NextSongURL;
@@ -354,16 +356,16 @@ namespace MusicBeePlugin
                         if (isfirstsong)
                         {                               
                             playlistName = DateTime.Now.ToString("LikeADJ dd-MM-yyyy HH-mm-ss");
-                            Trace.TraceInformation("Generating playlist " + playlistName + "...");
+                            Logger.Info("Generating playlist " + playlistName + "...");
                             mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);                        
                             isfirstsong = false;
-                            Trace.TraceInformation("Found the fisrt Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                            Logger.Info("Found the fisrt Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                         }
                         else
                         {
                             if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                             else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
-                            Trace.TraceInformation("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                            Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                         }
 
                         CountSongsPlaylist++;
@@ -375,7 +377,7 @@ namespace MusicBeePlugin
                 mbApiInterface.NowPlayingList_Clear();                
                 message.Close();
                 timer.Stop();
-                Trace.TraceInformation("Playlist " + playlistName + " generated successfully in " + timer.Elapsed.Minutes.ToString() + "m " + timer.Elapsed.Seconds.ToString() + "s");
+                Logger.Info("Playlist " + playlistName + " generated successfully in " + timer.Elapsed.Minutes.ToString() + "m " + timer.Elapsed.Seconds.ToString() + "s");
                 playlistName = oldplaylistname;
             }
         }
@@ -395,7 +397,7 @@ namespace MusicBeePlugin
        
         public void Close(PluginCloseReason reason)
         {
-            Trace.TraceInformation("Closing LikeADJ " + LikeADJVersion + " β plugin by DJC👽D...");
+            Logger.Info("Closing LikeADJ " + LikeADJVersion + " β plugin by DJC👽D...");
         }
 
         public void Uninstall()
@@ -441,7 +443,7 @@ namespace MusicBeePlugin
                         if ((CurrentSongGenre == string.Empty) && allowgenres) { message += "- 'Genre' tag is empty but Genres Auto Mix is allowed.\n"; }
                         message += "\nPlease uncheck unwanted features in the plugin configuration or select another first song.";
                         MessageBox.Show(message,"LikeADJ " + LikeADJVersion);
-                        Trace.TraceInformation("Player stopped because first song has some tags required not filled.");
+                        Logger.Info("Player stopped because first song has some tags required not filled.");
                         mbApiInterface.Player_Stop();
                         break;
                     }
@@ -510,7 +512,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Trace.TraceWarning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -555,7 +557,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Trace.TraceWarning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -581,7 +583,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Trace.TraceWarning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -603,7 +605,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Trace.TraceWarning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -625,7 +627,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Trace.TraceWarning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -635,7 +637,7 @@ namespace MusicBeePlugin
 
                         message.Close(); 
 
-                        if (NBSongsPassed >= CountNowPlayingFiles.Length) { Trace.TraceInformation("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); }
+                        if (NBSongsPassed >= CountNowPlayingFiles.Length) { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); }
                         else
                         {
                             if (savesongsplaylist)
@@ -648,19 +650,19 @@ namespace MusicBeePlugin
 
                                 if (isfirstsong || !playlistexist)
                                 {
-                                    Trace.TraceInformation("Creating playlist " + playlistName + "...");                                 
+                                    Logger.Info("Creating playlist " + playlistName + "...");                                 
                                     mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
                                     isfirstsong = false;
                                 }
                                 else
                                 {
-                                    Trace.TraceInformation("Adding song to playlist " + playlistName + "...");
+                                    Logger.Info("Adding song to playlist " + playlistName + "...");
                                     if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                                     else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                                 }
                             }
 
-                            Trace.TraceInformation("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:"  + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                            Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:"  + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                         }
                     }
 
@@ -672,8 +674,8 @@ namespace MusicBeePlugin
         {
             try
             {
-                if (isSettingsChanged) { Trace.TraceInformation("Settings changed. Reloading settings..."); }
-                else { Trace.TraceInformation("Loading settings..."); }
+                if (isSettingsChanged) { Logger.Info("Settings changed. Reloading settings..."); }
+                else { Logger.Info("Loading settings..."); }
 
                 Boolean.TryParse(ini.Read("ALLOWBPM", "BPM"), out allowbpm);
                 DiffBPM = int.Parse(ini.Read("DIFFBPM", "BPM"));
@@ -699,7 +701,7 @@ namespace MusicBeePlugin
                 BeatDetectionEvery = ini.Read("BEATDETECTIONEVERY", "HUE");
                 Boolean.TryParse(ini.Read("DISABLELOGGING", "HUE"), out disablelogging);
 
-                Trace.TraceInformation("Settings : ALLOWBPM=" + allowbpm + "[Max Diff " + DiffBPM + "] - ALLOWHARMONICKEY=" + allowharmonickey + " - ALLOWENERGY = " + allowenergy + "[Min " + minenergy + "] - ALLOWRATINGS=" + allowratings + "[Min " + minrattings + "] - ALLOWGENRES=" + allowgenres + "[" + genresallowed + "] - SAVESONGSPLAYLIST=" + savesongsplaylist + " - NUMBERSONGSPLAYLIST=" + numbersongsplaylist + " - ALLOWHUE=" + allowhue + "[Change lights when " + changelightswhen + "] - LIGHTSALLOWED=" + ini.Read("LIGHTSALLOWED", "HUE") + " - BRIGHTNESSLIGHTSMIN=" + brightnesslightmin + " - BRIGHTNESSLIGHTSMAX=" + brightnesslightmax + " - BEATDETECTIONEVERY=" + BeatDetectionEvery + "ms - DISABLELOGGING=" + disablelogging);
+                Logger.Info("Settings : ALLOWBPM=" + allowbpm + "[Max Diff " + DiffBPM + "] - ALLOWHARMONICKEY=" + allowharmonickey + " - ALLOWENERGY = " + allowenergy + "[Min " + minenergy + "] - ALLOWRATINGS=" + allowratings + "[Min " + minrattings + "] - ALLOWGENRES=" + allowgenres + "[" + genresallowed + "] - SAVESONGSPLAYLIST=" + savesongsplaylist + " - NUMBERSONGSPLAYLIST=" + numbersongsplaylist + " - ALLOWHUE=" + allowhue + "[Change lights when " + changelightswhen + "] - LIGHTSALLOWED=" + ini.Read("LIGHTSALLOWED", "HUE") + " - BRIGHTNESSLIGHTSMIN=" + brightnesslightmin + " - BRIGHTNESSLIGHTSMAX=" + brightnesslightmax + " - BEATDETECTIONEVERY=" + BeatDetectionEvery + "ms - DISABLELOGGING=" + disablelogging);
                 isSettingsChanged = false;
 
                 if (allowhue && APIKey != string.Empty) { settings.InitBridge(); }
@@ -709,10 +711,10 @@ namespace MusicBeePlugin
                 {
                     Double.TryParse(BeatDetectionEvery, out Double Interval);
                     LikeADJTimerBeatDetectedSimple.Interval = Interval;
-                    Trace.TraceInformation("Starting timer for 'Beat is detected (Simple)' : " + Interval + "ms...");
+                    Logger.Info("Starting timer for 'Beat is detected (Simple)' : " + Interval + "ms...");
                     LikeADJTimerBeatDetectedSimple.Start();
                 }
-                else if (LikeADJTimerBeatDetectedSimple.Enabled) { LikeADJTimerBeatDetectedSimple.Stop(); Trace.TraceInformation("Timer for 'Beat is detected (Simple)' stopped."); }
+                else if (LikeADJTimerBeatDetectedSimple.Enabled) { LikeADJTimerBeatDetectedSimple.Stop(); Logger.Info("Timer for 'Beat is detected (Simple)' stopped."); }
 
                 if (allowhue && APIKey != string.Empty && changelightswhen == "Beat is detected (SubBand)")
                 {
@@ -720,23 +722,23 @@ namespace MusicBeePlugin
                     for (int i = 0; i < BeatDetection.SubBands.Length; i++) { BeatDetection.SubBands[i] = new BeatDetection.SubBand(i + 1); }
                     Double.TryParse(BeatDetectionEvery, out Double Interval);
                     LikeADJTimerBeatDetectedSubBand.Interval = Interval;
-                    Trace.TraceInformation("Starting timer for 'Beat is detected (SubBand)' : " + Interval + "ms...");
+                    Logger.Info("Starting timer for 'Beat is detected (SubBand)' : " + Interval + "ms...");
                     LikeADJTimerBeatDetectedSubBand.Start();
                 }
-                else if (LikeADJTimerBeatDetectedSubBand.Enabled) { LikeADJTimerBeatDetectedSubBand.Stop(); Trace.TraceInformation("Timer for 'Beat is detected (SubBand)' stopped.");}
+                else if (LikeADJTimerBeatDetectedSubBand.Enabled) { LikeADJTimerBeatDetectedSubBand.Stop(); Logger.Info("Timer for 'Beat is detected (SubBand)' stopped.");}
 
                 if (allowhue && APIKey != string.Empty && changelightswhen == "15s before ending (flashing RED) & Track change")
                 {
                     LikeADJTimerRedAlertEndOfSong.Interval = 500;
-                    Trace.TraceInformation("Starting timer for '15s before ending (flashing RED) & Track change' : " + LikeADJTimerRedAlertEndOfSong.Interval + "ms...");
+                    Logger.Info("Starting timer for '15s before ending (flashing RED) & Track change' : " + LikeADJTimerRedAlertEndOfSong.Interval + "ms...");
                     LikeADJTimerRedAlertEndOfSong.Start();
                 }
-                else if (LikeADJTimerRedAlertEndOfSong.Enabled) { LikeADJTimerRedAlertEndOfSong.Stop(); Trace.TraceInformation("Timer for '15s before ending (flashing RED) & Track change' stopped."); }
+                else if (LikeADJTimerRedAlertEndOfSong.Enabled) { LikeADJTimerRedAlertEndOfSong.Stop(); Logger.Info("Timer for '15s before ending (flashing RED) & Track change' stopped."); }
             }
             catch
             {
-                if (MusicBeeisportable) if (!File.Exists(Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini")) Trace.TraceInformation("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found.");
-                else if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini")) Trace.TraceInformation("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found.");
+                if (MusicBeeisportable) if (!File.Exists(Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini")) Logger.Info("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found.");
+                else if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini")) Logger.Info("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found.");
             }
         }
 
@@ -753,7 +755,7 @@ namespace MusicBeePlugin
 
             if (diff<15)
             { 
-                Trace.TraceInformation("Red alert of ending song (15s) engaged at " + string.Format("{0:D2}:{1:D2}:{2:D2}", elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds));
+                Logger.Info("Red alert of ending song (15s) engaged at " + string.Format("{0:D2}:{1:D2}:{2:D2}", elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds));
                 for (int i = 0; i < lightIndicesAllowed.Length; i++)
                 {
                     if (lightIndicesAllowed[i] != 0)
@@ -768,7 +770,7 @@ namespace MusicBeePlugin
 
         public static async void LightChangeColorandBrightness(int lightIDX, double R, double G, double B, int lightBrightness)
         {
-            if (!disablelogging) Trace.TraceInformation("Changing color of light " + lightIDX + " to (" + R + "," + G + "," + B + ") and brightness to " + lightBrightness + "...");
+            if (!disablelogging) Logger.Info("Changing color of light " + lightIDX + " to (" + R + "," + G + "," + B + ") and brightness to " + lightBrightness + "...");
             ColorConverter.ColorToXY(R, G, B, out double X, out double Y);
 
             REST rest = new REST(theHueBridge.BridgeURLBase.Replace("http://", "").Replace(@":80/", ""));

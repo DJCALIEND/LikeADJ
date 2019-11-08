@@ -1,0 +1,73 @@
+using System;
+using System.Windows.Forms;
+
+namespace LogMonitor.UserControls
+{
+    class LogMonitorTab : TabPage, IDisposable
+    {
+        public LogMonitorTab(LogMonitorControl logControl)
+        {
+            _logControl = logControl;
+            _logControl.LogFileChanged += LogFileChangedHandler;
+            this.Enter += LogMonitorTab_GotFocus;
+        }
+
+        public LogMonitorControl LogControl { get { return _logControl; } }
+
+        private void LogFileChangedHandler(object sender, EventArgs args)
+        {
+            TabControl tabControl = Parent as TabControl;
+
+            if (null != tabControl)
+            {
+                if (tabControl.InvokeRequired)
+                {
+                    tabControl.Invoke(new MethodInvoker(delegate
+                    {
+                        if (tabControl.SelectedTab != this && !Text.StartsWith("*"))
+                        {
+                            Text = "*" + Text;
+                        }
+                    }
+                    ));
+                }
+                else
+                {
+                    if (tabControl.SelectedTab != this && !Text.StartsWith("*"))
+                    {
+                        Text = "*" + Text;
+                    }
+                }
+            }
+        }
+
+        private void LogMonitorTab_GotFocus(object sender, EventArgs e)
+        {
+            if (Text.StartsWith("*"))
+            {
+                Text = Text.Substring(1);
+                _logControl.ScrollToEnd();
+            }
+        }
+
+        public void CopyToClipboard()
+        {
+            _logControl.CopyToClipboard();
+        }
+
+        override protected void Dispose(bool calledDirectly)
+        {
+            if (calledDirectly)
+            {
+                if (null != _logControl)
+                {
+                    _logControl.LogFileChanged -= LogFileChangedHandler;
+                    _logControl.Dispose();
+                }
+            }
+            base.Dispose(calledDirectly);
+        }
+
+        private LogMonitorControl _logControl;
+    }
+}

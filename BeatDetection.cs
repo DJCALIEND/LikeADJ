@@ -49,8 +49,8 @@ namespace MusicBeePlugin
             {
                 int songposition = Plugin.mbApiInterface.Player_GetPosition();
                 TimeSpan elapsed = TimeSpan.FromMilliseconds(songposition);
-
-                if (!Plugin.disablelogging) Trace.TraceInformation("Beat detected at " + string.Format("{0:D2}:{1:D2}:{2:D2}", elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds));
+                
+                if (!Plugin.disablelogging) Plugin.Logger.Info("Beat detected at " + string.Format("{0:D2}:{1:D2}:{2:D2}", elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds));
                 for (int i = 0; i < Plugin.lightIndicesAllowed.Length; i++)
                 {
                     if (Plugin.lightIndicesAllowed[i] != 0)
@@ -87,7 +87,7 @@ namespace MusicBeePlugin
                     int songposition = Plugin.mbApiInterface.Player_GetPosition();
                     TimeSpan elapsed = TimeSpan.FromMilliseconds(songposition);
 
-                    if (!Plugin.disablelogging) Trace.TraceInformation("Beat detected at " + string.Format("{0:D2}:{1:D2}:{2:D2}", elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds));
+                    if (!Plugin.disablelogging) Plugin.Logger.Info("Beat detected at " + string.Format("{0:D2}:{1:D2}:{2:D2}", elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds));
                     for (int j = 0; j < Plugin.lightIndicesAllowed.Length; j++)
                     {
                         if (Plugin.lightIndicesAllowed[j] != 0)

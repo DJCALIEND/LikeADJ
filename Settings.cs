@@ -32,16 +32,16 @@ namespace MusicBeePlugin
 
         public void Settings_Load(object sender, EventArgs e)
         {
-            Trace.TraceInformation("Entering settings...");
+            Plugin.Logger.Info("Entering settings...");
 
-            Trace.TraceInformation("Scanning genres from the entire library started...");
+            Plugin.Logger.Info("Scanning genres from the entire library started...");
             string[] tracks = { };
             Plugin.mbApiInterface.Library_QueryFilesEx("", out tracks);
             string[] genres = new string[tracks.Length];
             for (int i = 0; i < tracks.Length; i++) genres[i] = Plugin.mbApiInterface.Library_GetFileTag(tracks[i], Plugin.MetaDataType.Genre);
             genresdistinct = genres.Distinct().ToArray();
             Array.Sort(genresdistinct);
-            Trace.TraceInformation("Scanning genres from the entire library finished.");
+            Plugin.Logger.Info("Scanning genres from the entire library finished.");
 
             if (File.Exists(Plugin.LikeADJIniFile))
             { 
@@ -113,8 +113,8 @@ namespace MusicBeePlugin
             }
             else
             {
-                if (Plugin.MusicBeeisportable) Trace.TraceInformation("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found. Creating a new one...");
-                else Trace.TraceInformation("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found. Creating a new one...");
+                if (Plugin.MusicBeeisportable) Plugin.Logger.Info("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found. Creating a new one...");
+                else Plugin.Logger.Info("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found. Creating a new one...");
 
                 TB_DiffBPM.Text = "15";
                 TB_MinEnergy.Text = "6";
@@ -152,13 +152,13 @@ namespace MusicBeePlugin
 
         private void BT_Cancel_Click(object sender, EventArgs e)
         {
-            Trace.TraceInformation("Closing settings without saving...");
+            Plugin.Logger.Info("Closing settings without saving...");
             Close();
         }
 
         private void BT_OK_Click(object sender, EventArgs e)
         {
-            Trace.TraceInformation("Saving settings...");
+            Plugin.Logger.Info("Saving settings...");
             Plugin.ini.Write("ALLOWBPM", CB_AllowBPM.Checked.ToString(), "BPM");
             Plugin.ini.Write("DIFFBPM", TB_DiffBPM.Text, "BPM");
             Plugin.ini.Write("ALLOWHARMONICKEY", CB_AllowInitialKey.Checked.ToString(), "HARMONICKEY");
@@ -196,7 +196,7 @@ namespace MusicBeePlugin
 
         private void FindBridges()
         {
-            Trace.TraceInformation("Scanning to find Hue bridge...");
+            Plugin.Logger.Info("Scanning to find Hue bridge...");
             lblBridgeCnx.Text = "Scanning to find Hue bridge...";
 
             WebClient client = new WebClient();
@@ -231,11 +231,11 @@ namespace MusicBeePlugin
             Plugin.APIKey = Plugin.ini.Read("APIKEY", "HUE");
             if (Plugin.APIKey != string.Empty)
             {
-                Trace.TraceInformation("APIKey found : " + Plugin.APIKey);
+                Plugin.Logger.Info("APIKey found : " + Plugin.APIKey);
                 return true;
             }
 
-            Trace.TraceInformation("No APIKey found !");
+            Plugin.Logger.Info("No APIKey found !");
             return false;
         }
 
@@ -276,13 +276,13 @@ namespace MusicBeePlugin
                 if (isRescanLights)
                 {
                     lblBridgeCnx.Text = "Rescanning Hue lights paired with your Hue bridge...";
-                    Trace.TraceInformation("Rescanning Hue lights paired with your Hue bridge...");
+                    Plugin.Logger.Info("Rescanning Hue lights paired with your Hue bridge...");
                     isRescanLights = false;
                 }
                 else
                 { 
                     lblBridgeCnx.Text = "Scanning Hue lights paired with your Hue bridge...";
-                    Trace.TraceInformation("Scanning Hue lights paired with your Hue bridge...");
+                    Plugin.Logger.Info("Scanning Hue lights paired with your Hue bridge...");
                 }
 
                 string endpoint = Plugin.theHueBridge.BridgeURLBase.Replace("http://", "").Replace(@":80/", "");
@@ -317,7 +317,7 @@ namespace MusicBeePlugin
                     if (exist) item.Checked = true;
                     item.SubItems.Add(Plugin.allLights[i].Name);
                     LV_Lights.Items.Add(item);
-                    Trace.TraceInformation("Found light : " + (i + 1) + " - Index : " + Plugin.lightIndices[i].ToString() + " - " + Plugin.allLights[i].Name + " [Type : " + Plugin.allLights[i].Type + " - Model : " + Plugin.allLights[i].Modelid + " - Firmware : " + Plugin.allLights[i].Swversion + "]");
+                    Plugin.Logger.Info("Found light : " + (i + 1) + " - Index : " + Plugin.lightIndices[i].ToString() + " - " + Plugin.allLights[i].Name + " [Type : " + Plugin.allLights[i].Type + " - Model : " + Plugin.allLights[i].Modelid + " - Firmware : " + Plugin.allLights[i].Swversion + "]");
                     i++;
                 }
 
@@ -335,7 +335,7 @@ namespace MusicBeePlugin
                 CB_DisableLogging.Visible = true;
                 lblBridgeCnx.Visible = true;
 
-                Trace.TraceInformation("Connected to bridge : " + Plugin.theHueBridge.BridgeDeviceSpec.BridgeFriendlyName + " - Found " + i + " lights");
+                Plugin.Logger.Info("Connected to bridge : " + Plugin.theHueBridge.BridgeDeviceSpec.BridgeFriendlyName + " - Found " + i + " lights");
                 lblBridgeCnx.Text = "Connected to bridge : " + Plugin.theHueBridge.BridgeDeviceSpec.BridgeFriendlyName + "\nFound " + i + " lights";
             }
             catch
@@ -353,14 +353,14 @@ namespace MusicBeePlugin
                 TB_BeatDetectionEvery.Visible = false;
                 CB_DisableLogging.Visible = false;
                 lblBridgeCnx.Visible = false;
-                Trace.TraceInformation("No Hue bridges found !!! Perhaps your bridge has changed. Try to reset your pairing.");
+                Plugin.Logger.Info("No Hue bridges found !!! Perhaps your bridge has changed. Try to reset your pairing.");
                 MessageBox.Show("No Hue bridges found !!!\nPerhaps your bridge has changed.\n\nTry to reset your pairing.", "Scan Failed", MessageBoxButtons.OK);
             }
         }
 
         private async void BT_PairHue_Click(object sender, EventArgs e)
         {
-            Trace.TraceInformation("Pairing your bridge...");
+            Plugin.Logger.Info("Pairing your bridge...");
             XmlSerializer bridgeGetter = new XmlSerializer(typeof(Hue));
             TextReader bridgeXmlReader = new StreamReader(bridgeXmlPath);
             Plugin.theHueBridge = (Hue)bridgeGetter.Deserialize(bridgeXmlReader);
@@ -403,7 +403,7 @@ namespace MusicBeePlugin
             CB_DisableLogging.Visible = true;
             lblBridgeCnx.Visible = true;
             lblBridgeCnx.Text = "Connected to bridge :\n" + Plugin.theHueBridge.BridgeDeviceSpec.BridgeFriendlyName;
-            Trace.TraceInformation("Connected to bridge : " + Plugin.theHueBridge.BridgeDeviceSpec.BridgeFriendlyName);
+            Plugin.Logger.Info("Connected to bridge : " + Plugin.theHueBridge.BridgeDeviceSpec.BridgeFriendlyName);
             PopulateBridgeLights();
         }
 
@@ -411,7 +411,7 @@ namespace MusicBeePlugin
         {
             if (MessageBox.Show("Are you sure you want to reset the Hue pairing ? \n(Select Yes if the bridge has been reset or the lights are not populating)", "Reset HUE Pairing", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) { return; }
 
-            Trace.TraceInformation("Resetting your Hue bridge...");
+            Plugin.Logger.Info("Resetting your Hue bridge...");
             Plugin.APIKey = Plugin.ini.Read("APIKEY", "HUE");
             if (Plugin.APIKey != string.Empty) { Plugin.ini.DeleteKey("APIKEY", "HUE"); }
 
