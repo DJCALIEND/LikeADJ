@@ -41,14 +41,14 @@ namespace LogMonitor
             this._tabControl.Location = new System.Drawing.Point(0, 0);
             this._tabControl.Name = "_tabControl";
             this._tabControl.SelectedIndex = 0;
-            this._tabControl.Size = new System.Drawing.Size(1393, 440);
+            this._tabControl.Size = new System.Drawing.Size(1576, 440);
             this._tabControl.TabIndex = 2;
             // 
             // LogMonitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1393, 440);
+            this.ClientSize = new System.Drawing.Size(1576, 440);
             this.Controls.Add(this._tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LogMonitor";

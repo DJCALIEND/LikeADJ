@@ -81,7 +81,7 @@ namespace MusicBeePlugin
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
             about.ConfigurationPanelHeight = 0;
-          
+
             if (Application.StartupPath != @"C:\Program Files (x86)\MusicBee") MusicBeeisportable = true;
             else MusicBeeisportable = false;
 

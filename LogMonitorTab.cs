@@ -10,9 +10,8 @@ namespace LogMonitor.UserControls
             _logControl = logControl;
             _logControl.LogFileChanged += LogFileChangedHandler;
             this.Enter += LogMonitorTab_GotFocus;
+            _logControl.ScrollToEnd();
         }
-
-        public LogMonitorControl LogControl { get { return _logControl; } }
 
         private void LogFileChangedHandler(object sender, EventArgs args)
         {
@@ -20,39 +19,15 @@ namespace LogMonitor.UserControls
 
             if (null != tabControl)
             {
-                if (tabControl.InvokeRequired)
-                {
-                    tabControl.Invoke(new MethodInvoker(delegate
-                    {
-                        if (tabControl.SelectedTab != this && !Text.StartsWith("*"))
-                        {
-                            Text = "*" + Text;
-                        }
-                    }
-                    ));
-                }
-                else
-                {
-                    if (tabControl.SelectedTab != this && !Text.StartsWith("*"))
-                    {
-                        Text = "*" + Text;
-                    }
-                }
+                if (tabControl.InvokeRequired) { tabControl.Invoke(new MethodInvoker(delegate { if (tabControl.SelectedTab != this && !Text.StartsWith("*")) { Text = "*" + Text; } } )); }
+                else { if (tabControl.SelectedTab != this && !Text.StartsWith("*")) { Text = "*" + Text; } }
             }
         }
 
         private void LogMonitorTab_GotFocus(object sender, EventArgs e)
         {
-            if (Text.StartsWith("*"))
-            {
-                Text = Text.Substring(1);
-                _logControl.ScrollToEnd();
-            }
-        }
-
-        public void CopyToClipboard()
-        {
-            _logControl.CopyToClipboard();
+            Text = Text.Substring(1);
+            _logControl.ScrollToEnd();
         }
 
         override protected void Dispose(bool calledDirectly)

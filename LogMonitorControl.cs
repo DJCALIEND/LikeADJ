@@ -6,28 +6,11 @@ namespace LogMonitor.UserControls
 {
     public partial class LogMonitorControl : UserControl
     {
-        public LogMonitorControl()
-        {
-            InitializeComponent();
-        }
-
         public LogMonitorControl(string fileName)
         {
             InitializeComponent();
-
             FileName = fileName;
         }
-
-        //public EventHandler<EventArgs> BrowseForLogFile;
-
-        //protected void OnBrowseForLogFile()
-        //{
-        //    EventHandler<EventArgs> handler = BrowseForLogFile;
-        //    if (null != handler)
-        //    {
-        //        handler(this, EventArgs.Empty);
-        //    }
-        //}
 
         public EventHandler<EventArgs> LogFileChanged;
 
@@ -49,10 +32,9 @@ namespace LogMonitor.UserControls
                 {
                     _fileName = value;
 
-                        ClearMonitoringMethod();
-
-                        PrepareMonitoringMethod();
-                        ReloadFile();                
+                    ClearMonitoringMethod();
+                    PrepareMonitoringMethod();
+                    ReloadFile();
                 }
             }
         }
@@ -87,30 +69,23 @@ namespace LogMonitor.UserControls
             }
         }
 
-        public void CopyToClipboard()
-        {
-            if (0 < _textBoxContents.SelectionLength) _textBoxContents.Copy();
-            else Clipboard.SetText(_textBoxContents.Text);
-        }
-
         private void PrepareMonitoringMethod()
         {
+            ClearTimer();
 
-                ClearTimer();
+            if (null != _fileName && null == _watcher)
+            {
+                string path = Path.GetDirectoryName(_fileName);
+                string baseName = Path.GetFileName(_fileName);
 
-                if (null != _fileName && null == _watcher)
-                {
-                    string path = Path.GetDirectoryName(_fileName);
-                    string baseName = Path.GetFileName(_fileName);
-
-                    _watcher = new System.IO.FileSystemWatcher(path.Length == 0 ? "." : path, baseName);
-                    FileSystemEventHandler handler = new FileSystemEventHandler(watcher_Changed);
-                    _watcher.Changed += handler;
-                    _watcher.Created += handler;
-                    _watcher.Deleted += handler;
-                    _watcher.Renamed += watcher_Renamed;
-                    _watcher.EnableRaisingEvents = true;
-                }
+                _watcher = new System.IO.FileSystemWatcher(path.Length == 0 ? "." : path, baseName);
+                FileSystemEventHandler handler = new FileSystemEventHandler(watcher_Changed);
+                _watcher.Changed += handler;
+                _watcher.Created += handler;
+                _watcher.Deleted += handler;
+                _watcher.Renamed += watcher_Renamed;
+                _watcher.EnableRaisingEvents = true;
+            }
         }
 
         private void ReloadFile()
@@ -119,10 +94,7 @@ namespace LogMonitor.UserControls
             _reloadingFile = true;
             try
             {
-                if (null == _fileName)
-                {
-                    _textBoxContents.Text = "";
-                }
+                if (null == _fileName) { _textBoxContents.Text = ""; }
                 else
                 {
                     string newFileLines = "";
@@ -141,25 +113,13 @@ namespace LogMonitor.UserControls
                                 using (FileStream stream = File.Open(_fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                                 {
                                     newLength = stream.Length;
-                                    if (newLength >= _lastFileSize)
-                                    {
-                                        stream.Position = _lastFileSize;  
-                                    }
-                                    else
-                                    {
-                                        needToClear = true;
-                                    }
-                                    using (StreamReader reader = new StreamReader(stream))
-                                    {
-                                        newFileLines = reader.ReadToEnd();
-                                    }
+                                    if (newLength >= _lastFileSize) { stream.Position = _lastFileSize; }
+                                    else { needToClear = true; }
+                                    using (StreamReader reader = new StreamReader(stream)) { newFileLines = reader.ReadToEnd(); }
                                 }
                                 success = true;
                             }
-                            catch (IOException)
-                            {
-                                System.Threading.Thread.Sleep(50); 
-                            }
+                            catch (IOException) { System.Threading.Thread.Sleep(50); }
                             ++count;
                         }
                     }
@@ -167,54 +127,31 @@ namespace LogMonitor.UserControls
                     _lastFileSize = newLength;
                     string fileSizeString = _lastFileSize.ToString();
                     string modifiedTimeStr = _lastModifiedTime.ToShortDateString() + " " + _lastModifiedTime.ToLongTimeString();
+
                     if (!fileExists)
                     {
                         fileSizeString = "<Not Found>";
                         modifiedTimeStr = "";
                     }
+
                     if (0 != newFileLines.Length)
                     {
                         int lastCr = newFileLines.LastIndexOf('\n');
-                        if (-1 != lastCr && 0 < lastCr)
-                        {
-                            if (newFileLines[lastCr - 1] != '\r')
-                            {
-                                newFileLines = newFileLines.Replace("\n", "\r\n");
-                            }
-                        }
+                        if (-1 != lastCr && 0 < lastCr) { if (newFileLines[lastCr - 1] != '\r') { newFileLines = newFileLines.Replace("\n", "\r\n"); }  }
                     }
+
                     if (needToClear)
                     {
-                        if (_textBoxContents.InvokeRequired)
-                        {
-                            _textBoxContents.Invoke(new MethodInvoker(delegate { _textBoxContents.Clear(); }));
-                        }
-                        else
-                        {
-                            _textBoxContents.Clear();
-                        }
+                        if (_textBoxContents.InvokeRequired) { _textBoxContents.Invoke(new MethodInvoker(delegate { _textBoxContents.Clear(); })); }
+                        else { _textBoxContents.Clear(); }
                     }
-                    if (_textBoxContents.InvokeRequired)
-                    {
-                        if (0 != newFileLines.Length)
-                        {
-                            _textBoxContents.Invoke(new DoUpdateTextDelegate(DoUpdateText), new object[] { newFileLines });
-                        }
-                    }
-                    else
-                    {
-                        if (0 != newFileLines.Length)
-                        {
-                            DoUpdateText(newFileLines);
-                        }
-                    }
+
+                    if (_textBoxContents.InvokeRequired) { if (0 != newFileLines.Length) { _textBoxContents.Invoke(new DoUpdateTextDelegate(DoUpdateText), new object[] { newFileLines }); } }
+                    else { if (0 != newFileLines.Length) { DoUpdateText(newFileLines); } }
                     ScrollToEnd();
                 }
             }
-            finally
-            {
-                _reloadingFile = false;
-            }
+            finally { _reloadingFile = false; }
         }
 
         private delegate void DoUpdateTextDelegate(string newLogLines);
@@ -232,10 +169,7 @@ namespace LogMonitor.UserControls
                     _textBoxContents.Text = "";
                     newLogLines = newLogLines.Substring(newLogLines.Length - textTrimSize);
                 }
-                else
-                {
-                    _textBoxContents.Text = _textBoxContents.Text.Substring(textTrimSize - newLogLines.Length);
-                }
+                else { _textBoxContents.Text = _textBoxContents.Text.Substring(textTrimSize - newLogLines.Length); }
             }
 
             _textBoxContents.AppendText(newLogLines);
@@ -244,20 +178,13 @@ namespace LogMonitor.UserControls
             {
                 _textBoxContents.SelectionStart = selStart;
                 _textBoxContents.SelectionLength = selLength;
-
             }
         }
 
         public void ScrollToEnd()
         {
-            if (_textBoxContents.InvokeRequired)
-            {
-                _textBoxContents.Invoke(new MethodInvoker(DoScrollToEnd));
-            }
-            else
-            {
-                DoScrollToEnd();
-            }
+            if (_textBoxContents.InvokeRequired) { _textBoxContents.Invoke(new MethodInvoker(DoScrollToEnd)); }
+            else { DoScrollToEnd(); }
         }
 
         private void DoScrollToEnd()
@@ -267,6 +194,7 @@ namespace LogMonitor.UserControls
             _textBoxContents.SelectionStart = _textBoxContents.Text.Length;
             _textBoxContents.SelectionLength = 0;
             _textBoxContents.ScrollToCaret();
+
             if (-1 != selStart)
             {
                 _textBoxContents.SelectionStart = selStart;
@@ -279,8 +207,7 @@ namespace LogMonitor.UserControls
             if (null != _fileName)
             {
                 DateTime newLastModifiedTime = File.GetLastWriteTime(_fileName);
-                if ((newLastModifiedTime.Year < 1620 && newLastModifiedTime != _lastModifiedTime)
-                    || newLastModifiedTime > _lastModifiedTime)
+                if ((newLastModifiedTime.Year < 1620 && newLastModifiedTime != _lastModifiedTime) || newLastModifiedTime > _lastModifiedTime)
                 {
                     OnLogFileChanged();
                     ReloadFile();
@@ -309,7 +236,6 @@ namespace LogMonitor.UserControls
         private Timer _timer;
         private DateTime _lastModifiedTime;
         private long _lastFileSize;
-        private bool _intervalChanged;
         private bool _reloadingFile;
     }
 }
