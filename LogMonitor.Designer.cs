@@ -1,6 +1,4 @@
-using LogMonitor.UserControls;
-
-namespace LogMonitor
+namespace MusicBeePlugin
 {
     partial class LogMonitor
     {

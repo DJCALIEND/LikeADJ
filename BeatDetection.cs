@@ -107,7 +107,7 @@ namespace MusicBeePlugin
             public float averageEnergy;
             public float instantVariance;
             public int frequencyWidth;
-            private float[] historyBuffer;
+            private readonly float[] historyBuffer;
 
             public SubBand(int index)
             {

@@ -1,7 +1,4 @@
-using System;
-using System.IO;
-
-namespace LogMonitor.UserControls
+namespace MusicBeePlugin
 {
     public partial class LogMonitorControl
     {

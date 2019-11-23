@@ -47,16 +47,10 @@ namespace MusicBeePlugin
 
         private void WriteLine(string text, bool append = true)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                return;
-            }
+            if (string.IsNullOrEmpty(text)) { return; }
             lock (fileLock)
             {
-                using (System.IO.StreamWriter writer = new System.IO.StreamWriter(logFilename, append, System.Text.Encoding.UTF8))
-                {
-                    writer.WriteLine(text);
-                }
+                using (System.IO.StreamWriter writer = new System.IO.StreamWriter(logFilename, append, System.Text.Encoding.UTF8)) { writer.WriteLine(text); }
             }
         }
 

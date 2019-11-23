@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace LogMonitor.UserControls
+namespace MusicBeePlugin
 {
     public partial class LogMonitorControl : UserControl
     {
@@ -16,11 +16,7 @@ namespace LogMonitor.UserControls
 
         protected void OnLogFileChanged()
         {
-            EventHandler<EventArgs> handler = LogFileChanged;
-            if (null != handler)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            LogFileChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public string FileName
@@ -49,7 +45,7 @@ namespace LogMonitor.UserControls
         {
             if (null != _timer)
             {
-                _timer.Tick -= timer_Tick;
+                _timer.Tick -= Timer_Tick;
                 _timer.Dispose();
                 _timer = null;
             }
@@ -59,11 +55,11 @@ namespace LogMonitor.UserControls
         {
             if (null != _watcher)
             {
-                FileSystemEventHandler handler = new FileSystemEventHandler(watcher_Changed);
+                FileSystemEventHandler handler = new FileSystemEventHandler(Watcher_Changed);
                 _watcher.Changed -= handler;
                 _watcher.Created -= handler;
                 _watcher.Deleted -= handler;
-                _watcher.Renamed -= watcher_Renamed;
+                _watcher.Renamed -= Watcher_Renamed;
                 _watcher.Dispose();
                 _watcher = null;
             }
@@ -79,11 +75,11 @@ namespace LogMonitor.UserControls
                 string baseName = Path.GetFileName(_fileName);
 
                 _watcher = new System.IO.FileSystemWatcher(path.Length == 0 ? "." : path, baseName);
-                FileSystemEventHandler handler = new FileSystemEventHandler(watcher_Changed);
+                FileSystemEventHandler handler = new FileSystemEventHandler(Watcher_Changed);
                 _watcher.Changed += handler;
                 _watcher.Created += handler;
                 _watcher.Deleted += handler;
-                _watcher.Renamed += watcher_Renamed;
+                _watcher.Renamed += Watcher_Renamed;
                 _watcher.EnableRaisingEvents = true;
             }
         }
@@ -215,18 +211,18 @@ namespace LogMonitor.UserControls
             }
         }
 
-        void timer_Tick(object sender, EventArgs e)
+        void Timer_Tick(object sender, EventArgs e)
         {
             UpdateBasedOnFileTime();
         }
 
-        void watcher_Changed(object sender, FileSystemEventArgs e)
+        void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
             OnLogFileChanged();
             ReloadFile();
         }
 
-        void watcher_Renamed(object sender, RenamedEventArgs e)
+        void Watcher_Renamed(object sender, RenamedEventArgs e)
         {
             ReloadFile();
         }

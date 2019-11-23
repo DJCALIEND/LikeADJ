@@ -10,11 +10,6 @@ using System.Xml.Serialization;
 
 namespace MusicBeePlugin
 {
-    public class MyRoot
-    {
-        private Hue Hb { get; set; }
-    }
-
     [Serializable]
     [XmlRoot("root", Namespace = "urn:schemas-upnp-org:device-1-0")]
     public class Hue
@@ -74,7 +69,7 @@ namespace MusicBeePlugin
         private static readonly double RG = FindLength(rGamutB, gGamutB);
         private static readonly double GB = FindLength(gGamutB, bGamutB);
         private static readonly double BR = FindLength(bGamutB, rGamutB);
-        private static double areaOfGamutB = AreaOfTriangle(RG, GB, BR);
+        private static readonly double areaOfGamutB = AreaOfTriangle(RG, GB, BR);
 
         public static void ColorToXY(double red, double green, double blue, out double X, out double Y)
         {
@@ -106,8 +101,7 @@ namespace MusicBeePlugin
     {
         private static readonly HttpClient client = new HttpClient();
         private readonly string ourIP;
-        private JavaScriptSerializer jss = new JavaScriptSerializer();
-
+ 
         public REST(string mainIP)
         {
             ourIP = "http://" + mainIP;

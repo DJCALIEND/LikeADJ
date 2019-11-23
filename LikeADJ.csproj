@@ -105,13 +105,13 @@
     <Compile Include="LogMonitor.Designer.cs">
       <DependentUpon>LogMonitor.cs</DependentUpon>
     </Compile>
-    <Compile Include="LogMonitorControl.cs">
+    <Compile Include="Composants\LogMonitorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LogMonitorControl.Designer.cs">
+    <Compile Include="Composants\LogMonitorControl.Designer.cs">
       <DependentUpon>LogMonitorControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="LogMonitorTab.cs">
+    <Compile Include="Composants\LogMonitorTab.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Message.cs">
@@ -162,10 +162,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Composants\LogMonitorTab.resx">
+      <DependentUpon>LogMonitorTab.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LogMonitor.resx">
       <DependentUpon>LogMonitor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LogMonitorControl.resx">
+    <EmbeddedResource Include="Composants\LogMonitorControl.resx">
       <DependentUpon>LogMonitorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Message.resx">

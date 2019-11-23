@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -202,6 +201,7 @@ namespace MusicBeePlugin
             WebClient client = new WebClient();
             client.DownloadStringCompleted += Client_DownloadStringCompleted;
             client.DownloadStringAsync(new Uri("https://www.meethue.com/api/nupnp"), null);
+            client.Dispose();
         }
 
         private void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -217,6 +217,7 @@ namespace MusicBeePlugin
                 BT_PairHue.Visible = true;
                 lblBridgeCnx.Visible = true;
                 lblBridgeCnx.Text = "Hue bridge found :)\nClick on the button on your hue and after to 'Pair' button";
+                client.Dispose();
             }
             catch { lblBridgeCnx.Text = "No Hue bridge found :( !!!\nPlease check you are connected to your network."; }
         }

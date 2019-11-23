@@ -125,7 +125,7 @@ namespace MusicBeePlugin
             if (Plugin.MusicBeeisportable) logfile=Application.StartupPath + "\\Plugins\\mb_LikeADJ.log";
             else logfile=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log";
 
-            LogMonitor.LogMonitor f2 = new LogMonitor.LogMonitor(logfile);
+            LogMonitor f2 = new LogMonitor(logfile);
             f2.Show();
         }
 

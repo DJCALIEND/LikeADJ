@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace LogMonitor.UserControls
+namespace MusicBeePlugin
 {
     class LogMonitorTab : TabPage, IDisposable
     {
@@ -15,11 +15,9 @@ namespace LogMonitor.UserControls
 
         private void LogFileChangedHandler(object sender, EventArgs args)
         {
-            TabControl tabControl = Parent as TabControl;
-
-            if (null != tabControl)
+            if (Parent is TabControl tabControl)
             {
-                if (tabControl.InvokeRequired) { tabControl.Invoke(new MethodInvoker(delegate { if (tabControl.SelectedTab != this && !Text.StartsWith("*")) { Text = "*" + Text; } } )); }
+                if (tabControl.InvokeRequired) { tabControl.Invoke(new MethodInvoker(delegate { if (tabControl.SelectedTab != this && !Text.StartsWith("*")) { Text = "*" + Text; } })); }
                 else { if (tabControl.SelectedTab != this && !Text.StartsWith("*")) { Text = "*" + Text; } }
             }
         }
@@ -43,6 +41,6 @@ namespace LogMonitor.UserControls
             base.Dispose(calledDirectly);
         }
 
-        private LogMonitorControl _logControl;
+        private readonly LogMonitorControl _logControl;
     }
 }
