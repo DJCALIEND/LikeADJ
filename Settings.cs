@@ -115,7 +115,7 @@ namespace MusicBeePlugin
                 if (Plugin.MusicBeeisportable) Plugin.Logger.Info("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found. Creating a new one...");
                 else Plugin.Logger.Info("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found. Creating a new one...");
 
-                TB_DiffBPM.Text = "15";
+                TB_DiffBPM.Text = "10";
                 TB_MinEnergy.Text = "6";
                 TB_MinRatings.Text = "4";
                 TB_NumberSongsPlaylist.Text = "20";
@@ -232,11 +232,11 @@ namespace MusicBeePlugin
             Plugin.APIKey = Plugin.ini.Read("APIKEY", "HUE");
             if (Plugin.APIKey != string.Empty)
             {
-                Plugin.Logger.Info("APIKey found : " + Plugin.APIKey);
+                Plugin.Logger.Info("HUE APIKey found : " + Plugin.APIKey);
                 return true;
             }
 
-            Plugin.Logger.Info("No APIKey found !");
+            Plugin.Logger.Info("No HUE APIKey found !");
             return false;
         }
 

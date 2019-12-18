@@ -45,8 +45,7 @@ namespace MusicBeePlugin
         public static bool isSettingsChanged = false;
         public static bool allowbpm, allowharmonickey, allowenergy, allowratings, allowgenres, savesongsplaylist, allowhue;
         public static bool disablelogging, MusicBeeisportable;
-        public static int DiffBPM, minenergy, minrattings, numbersongsplaylist;
-        public static int brightnesslightmin, brightnesslightmax;
+        public static int DiffBPM, minenergy, minrattings, numbersongsplaylist, brightnesslightmin, brightnesslightmax, CountSongsPlaylist;
         public static string changelightswhen, BeatDetectionEvery;
         public static volatile string APIKey;
         public static Hue theHueBridge = new Hue();
@@ -62,7 +61,6 @@ namespace MusicBeePlugin
         public string playlistName = "LikeADJ History "+ DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss");
         public string[] mbPlaylistSongFiles = new string[1];
         public bool isfirstsong = true;
-        public int CountSongsPlaylist;
      
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -131,8 +129,6 @@ namespace MusicBeePlugin
 
         public void GeneratePlaylist(object sender, EventArgs e)
         {
-            LoadSettings();
-
             if (!allowbpm && !allowharmonickey && !allowenergy && !allowratings && !allowgenres) MessageBox.Show("You must activate at least one feature (BPM, Initial Key, Energy, Track Rating or Genre) to generate a LikeADJ playlist !!!", "LikeADJ " + LikeADJVersion);
             else
             {
@@ -397,7 +393,7 @@ namespace MusicBeePlugin
        
         public void Close(PluginCloseReason reason)
         {
-            Logger.Info("Closing LikeADJ " + LikeADJVersion + " β plugin by DJC👽D...");
+            Logger.Info("Closing LikeADJ " + LikeADJVersion + " RC plugin by DJC👽D...");
         }
 
         public void Uninstall()
@@ -650,19 +646,18 @@ namespace MusicBeePlugin
 
                                 if (isfirstsong || !playlistexist)
                                 {
-                                    Logger.Info("Creating playlist " + playlistName + "...");                                 
+                                    Logger.Info("Creating playlist " + playlistName + " with first song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
                                     isfirstsong = false;
                                 }
                                 else
                                 {
-                                    Logger.Info("Adding song to playlist " + playlistName + "...");
+                                    Logger.Info("Adding to playlist " + playlistName + " the song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                                     if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                                     else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                                 }
                             }
-
-                            Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:"  + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                            else { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']"); }
                         }
                     }
 
