@@ -143,7 +143,7 @@ namespace MusicBeePlugin
 
                 message = new Message();
                 message.Show();
-                message.Text = "LikeADJ - Generating playslist... Please wait...";
+                message.Text = "LikeADJ - Generating playlist... Please wait...";
 
                 mbApiInterface.NowPlayingList_Clear();
                 mbApiInterface.NowPlayingList_PlayLibraryShuffled();
@@ -365,7 +365,7 @@ namespace MusicBeePlugin
                         }
 
                         CountSongsPlaylist++;
-                        message.Text = "LikeADJ - Generating playslist... " + CountSongsPlaylist + "/" + numbersongsplaylist + " songs found. Please wait...";
+                        message.Text = "LikeADJ - Generating playlist... " + CountSongsPlaylist + "/" + numbersongsplaylist + " songs found. Please wait...";
                         CurrentSongIndex = NextSongIndex;
                      }
                 } while (CountSongsPlaylist < numbersongsplaylist);
