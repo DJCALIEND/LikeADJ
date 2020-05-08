@@ -122,7 +122,7 @@ namespace MusicBeePlugin
                 TB_MinRatings.Text = "4";
                 TB_NumberSongsPlaylist.Text = "20";
                 TB_BeatDetectionEvery.Text = "200";
-                CB_AllowScanningMessageBox.Checked = true;
+                CB_AllowScanningMessageBox.Checked = false;
                 CB_AllowHue.Checked = false;
                 lblBridgeCnx.Visible = false;
                 BT_PairHue.Visible = false;
@@ -246,6 +246,9 @@ namespace MusicBeePlugin
 
         public void InitBridge()
         {
+            if (Plugin.MusicBeeisportable) bridgeXmlPath = Application.StartupPath + "\\Plugins\\mb_LikeADJ.xml";
+            else bridgeXmlPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.xml";
+
             XmlSerializer bridgeGetter = new XmlSerializer(typeof(Hue));
             TextReader bridgeXmlReader = new StreamReader(bridgeXmlPath);
             Plugin.theHueBridge = (Hue)bridgeGetter.Deserialize(bridgeXmlReader);
