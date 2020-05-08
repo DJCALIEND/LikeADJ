@@ -62,6 +62,8 @@ namespace MusicBeePlugin
                 Boolean.TryParse(Plugin.ini.Read("SAVESONGSPLAYLIST", "PLAYLIST"), out flag);
                 CB_SaveSongsPlaylist.Checked = flag;
                 TB_NumberSongsPlaylist.Text = Plugin.ini.Read("NUMBERSONGSPLAYLIST", "PLAYLIST");
+                Boolean.TryParse(Plugin.ini.Read("ALLOWSCANNINGMESSAGEBOX", "GENERAL"), out flag);
+                CB_AllowScanningMessageBox.Checked = flag;
                 Boolean.TryParse(Plugin.ini.Read("ALLOWHUE", "HUE"), out flag);
                 CB_AllowHue.Checked = flag;
                 Plugin.APIKey = Plugin.ini.Read("APIKEY", "HUE");
@@ -120,6 +122,7 @@ namespace MusicBeePlugin
                 TB_MinRatings.Text = "4";
                 TB_NumberSongsPlaylist.Text = "20";
                 TB_BeatDetectionEvery.Text = "200";
+                CB_AllowScanningMessageBox.Checked = true;
                 CB_AllowHue.Checked = false;
                 lblBridgeCnx.Visible = false;
                 BT_PairHue.Visible = false;
@@ -169,6 +172,7 @@ namespace MusicBeePlugin
             Plugin.ini.Write("GENRESSELECTED", CCB_Genres.Text, "GENRES");
             Plugin.ini.Write("SAVESONGSPLAYLIST", CB_SaveSongsPlaylist.Checked.ToString(), "PLAYLIST");
             Plugin.ini.Write("NUMBERSONGSPLAYLIST", TB_NumberSongsPlaylist.Text, "PLAYLIST");
+            Plugin.ini.Write("ALLOWSCANNINGMESSAGEBOX", CB_AllowScanningMessageBox.Checked.ToString(), "GENERAL");
             Plugin.ini.Write("ALLOWHUE", CB_AllowHue.Checked.ToString(), "HUE");
             Plugin.ini.Write("APIKEY", Plugin.APIKey, "HUE");
             Plugin.ini.Write("CHANGELIGHTSWHEN", CB_ChangeLightsWhen.Text, "HUE");

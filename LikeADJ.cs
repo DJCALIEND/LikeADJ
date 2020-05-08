@@ -43,7 +43,7 @@ namespace MusicBeePlugin
         public static SimpleLogger Logger;
         public static string LikeADJVersion, LikeADJIniFile;
         public static bool isSettingsChanged = false;
-        public static bool allowbpm, allowharmonickey, allowenergy, allowratings, allowgenres, savesongsplaylist, allowhue;
+        public static bool allowbpm, allowharmonickey, allowenergy, allowratings, allowgenres, savesongsplaylist, allowscanningmessagebox, allowhue;
         public static bool disablelogging, MusicBeeisportable;
         public static int DiffBPM, minenergy, minrattings, numbersongsplaylist, brightnesslightmin, brightnesslightmax, CountSongsPlaylist;
         public static string changelightswhen, BeatDetectionEvery;
@@ -464,14 +464,17 @@ namespace MusicBeePlugin
                         string[] CountNowPlayingFiles = { };
                         mbApiInterface.NowPlayingList_QueryFilesEx("", out CountNowPlayingFiles);
 
-                        message = new Message();
-                        message.Show();
+                        if (allowscanningmessagebox)
+                        { 
+                            message = new Message();
+                            message.Show();
+                        }
 
                         bool FoundNextSong = false;
                         int NBSongsPassed=0;
                         do
                         {
-                            message.Text = "LikeADJ - Trying to find next song... "+ NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait...";
+                            if (allowscanningmessagebox) message.Text = "LikeADJ - Trying to find next song... "+ NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait...";
 
                             NBSongsPassed++;
 
@@ -631,7 +634,7 @@ namespace MusicBeePlugin
                             }
                         } while (!FoundNextSong);
 
-                        message.Close(); 
+                        if (allowscanningmessagebox) message.Close(); 
 
                         if (NBSongsPassed >= CountNowPlayingFiles.Length) { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); }
                         else
@@ -684,6 +687,7 @@ namespace MusicBeePlugin
                 genresAllowed = genresallowed.Split(',').ToArray();
                 Boolean.TryParse(ini.Read("SAVESONGSPLAYLIST", "PLAYLIST"), out savesongsplaylist);
                 numbersongsplaylist = int.Parse(ini.Read("NUMBERSONGSPLAYLIST", "PLAYLIST"));
+                Boolean.TryParse(Plugin.ini.Read("ALLOWSCANNINGMESSAGEBOX", "GENERAL"), out allowscanningmessagebox);
                 Boolean.TryParse(ini.Read("ALLOWHUE", "HUE"), out allowhue);
                 APIKey = ini.Read("APIKEY", "HUE");
                 changelightswhen = ini.Read("CHANGELIGHTSWHEN", "HUE");
@@ -696,7 +700,7 @@ namespace MusicBeePlugin
                 BeatDetectionEvery = ini.Read("BEATDETECTIONEVERY", "HUE");
                 Boolean.TryParse(ini.Read("DISABLELOGGING", "HUE"), out disablelogging);
 
-                Logger.Info("Settings : ALLOWBPM=" + allowbpm + "[Max Diff " + DiffBPM + "] - ALLOWHARMONICKEY=" + allowharmonickey + " - ALLOWENERGY = " + allowenergy + "[Min " + minenergy + "] - ALLOWRATINGS=" + allowratings + "[Min " + minrattings + "] - ALLOWGENRES=" + allowgenres + "[" + genresallowed + "] - SAVESONGSPLAYLIST=" + savesongsplaylist + " - NUMBERSONGSPLAYLIST=" + numbersongsplaylist + " - ALLOWHUE=" + allowhue + "[Change lights when " + changelightswhen + "] - LIGHTSALLOWED=" + ini.Read("LIGHTSALLOWED", "HUE") + " - BRIGHTNESSLIGHTSMIN=" + brightnesslightmin + " - BRIGHTNESSLIGHTSMAX=" + brightnesslightmax + " - BEATDETECTIONEVERY=" + BeatDetectionEvery + "ms - DISABLELOGGING=" + disablelogging);
+                Logger.Info("Settings : ALLOWBPM=" + allowbpm + "[Max Diff " + DiffBPM + "] - ALLOWHARMONICKEY=" + allowharmonickey + " - ALLOWENERGY = " + allowenergy + "[Min " + minenergy + "] - ALLOWRATINGS=" + allowratings + "[Min " + minrattings + "] - ALLOWGENRES=" + allowgenres + "[" + genresallowed + "] - SAVESONGSPLAYLIST=" + savesongsplaylist + " - NUMBERSONGSPLAYLIST=" + numbersongsplaylist + " - ALLOWSCANNINGMESSAGEBOX=" + "[" + allowscanningmessagebox + "] - ALLOWHUE=" + allowhue + "[Change lights when " + changelightswhen + "] - LIGHTSALLOWED=" + ini.Read("LIGHTSALLOWED", "HUE") + " - BRIGHTNESSLIGHTSMIN=" + brightnesslightmin + " - BRIGHTNESSLIGHTSMAX=" + brightnesslightmax + " - BEATDETECTIONEVERY=" + BeatDetectionEvery + "ms - DISABLELOGGING=" + disablelogging);
                 isSettingsChanged = false;
 
                 if (allowhue && APIKey != string.Empty) { settings.InitBridge(); }

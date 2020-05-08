@@ -33,6 +33,7 @@
             this.BT_Cancel = new System.Windows.Forms.Button();
             this.BT_Save = new System.Windows.Forms.Button();
             this.GB_LikeADJSettings = new System.Windows.Forms.GroupBox();
+            this.CB_AllowScanningMessageBox = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.TB_NumberSongsPlaylist = new System.Windows.Forms.TextBox();
@@ -79,7 +80,7 @@
             // LB_SeeLogFile
             // 
             this.LB_SeeLogFile.AutoSize = true;
-            this.LB_SeeLogFile.Location = new System.Drawing.Point(485, 1142);
+            this.LB_SeeLogFile.Location = new System.Drawing.Point(485, 1207);
             this.LB_SeeLogFile.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.LB_SeeLogFile.Name = "LB_SeeLogFile";
             this.LB_SeeLogFile.Size = new System.Drawing.Size(413, 25);
@@ -89,7 +90,7 @@
             // 
             // BT_Cancel
             // 
-            this.BT_Cancel.Location = new System.Drawing.Point(796, 1177);
+            this.BT_Cancel.Location = new System.Drawing.Point(796, 1242);
             this.BT_Cancel.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.BT_Cancel.Name = "BT_Cancel";
             this.BT_Cancel.Size = new System.Drawing.Size(224, 67);
@@ -100,7 +101,7 @@
             // 
             // BT_Save
             // 
-            this.BT_Save.Location = new System.Drawing.Point(516, 1177);
+            this.BT_Save.Location = new System.Drawing.Point(516, 1242);
             this.BT_Save.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.BT_Save.Name = "BT_Save";
             this.BT_Save.Size = new System.Drawing.Size(224, 67);
@@ -111,6 +112,7 @@
             // 
             // GB_LikeADJSettings
             // 
+            this.GB_LikeADJSettings.Controls.Add(this.CB_AllowScanningMessageBox);
             this.GB_LikeADJSettings.Controls.Add(this.label2);
             this.GB_LikeADJSettings.Controls.Add(this.label1);
             this.GB_LikeADJSettings.Controls.Add(this.TB_NumberSongsPlaylist);
@@ -147,10 +149,21 @@
             this.GB_LikeADJSettings.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.GB_LikeADJSettings.Name = "GB_LikeADJSettings";
             this.GB_LikeADJSettings.Padding = new System.Windows.Forms.Padding(8, 10, 8, 10);
-            this.GB_LikeADJSettings.Size = new System.Drawing.Size(1496, 931);
+            this.GB_LikeADJSettings.Size = new System.Drawing.Size(1496, 1005);
             this.GB_LikeADJSettings.TabIndex = 25;
             this.GB_LikeADJSettings.TabStop = false;
             this.GB_LikeADJSettings.Text = "LikeADJ settings :";
+            // 
+            // CB_AllowScanningMessageBox
+            // 
+            this.CB_AllowScanningMessageBox.AutoSize = true;
+            this.CB_AllowScanningMessageBox.Location = new System.Drawing.Point(54, 588);
+            this.CB_AllowScanningMessageBox.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
+            this.CB_AllowScanningMessageBox.Name = "CB_AllowScanningMessageBox";
+            this.CB_AllowScanningMessageBox.Size = new System.Drawing.Size(358, 29);
+            this.CB_AllowScanningMessageBox.TabIndex = 47;
+            this.CB_AllowScanningMessageBox.Text = "Allow the scanning message box";
+            this.CB_AllowScanningMessageBox.UseVisualStyleBackColor = true;
             // 
             // label2
             // 
@@ -208,7 +221,7 @@
             // LB_BrightnessLightsRange
             // 
             this.LB_BrightnessLightsRange.AutoSize = true;
-            this.LB_BrightnessLightsRange.Location = new System.Drawing.Point(902, 837);
+            this.LB_BrightnessLightsRange.Location = new System.Drawing.Point(904, 914);
             this.LB_BrightnessLightsRange.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.LB_BrightnessLightsRange.Name = "LB_BrightnessLightsRange";
             this.LB_BrightnessLightsRange.Size = new System.Drawing.Size(454, 25);
@@ -218,8 +231,8 @@
             // RS_BrightnessLightsRange
             // 
             this.RS_BrightnessLightsRange.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.RS_BrightnessLightsRange.Location = new System.Drawing.Point(906, 875);
-            this.RS_BrightnessLightsRange.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.RS_BrightnessLightsRange.Location = new System.Drawing.Point(908, 952);
+            this.RS_BrightnessLightsRange.Margin = new System.Windows.Forms.Padding(6);
             this.RS_BrightnessLightsRange.Max = 255;
             this.RS_BrightnessLightsRange.Min = 0;
             this.RS_BrightnessLightsRange.Name = "RS_BrightnessLightsRange";
@@ -260,7 +273,7 @@
             this.CCB_Genres.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.CCB_Genres.IntegralHeight = false;
             this.CCB_Genres.Location = new System.Drawing.Point(284, 440);
-            this.CCB_Genres.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.CCB_Genres.Margin = new System.Windows.Forms.Padding(6);
             this.CCB_Genres.Name = "CCB_Genres";
             this.CCB_Genres.Size = new System.Drawing.Size(608, 32);
             this.CCB_Genres.TabIndex = 34;
@@ -310,7 +323,7 @@
             // CB_DisableLogging
             // 
             this.CB_DisableLogging.AutoSize = true;
-            this.CB_DisableLogging.Location = new System.Drawing.Point(88, 881);
+            this.CB_DisableLogging.Location = new System.Drawing.Point(87, 941);
             this.CB_DisableLogging.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.CB_DisableLogging.Name = "CB_DisableLogging";
             this.CB_DisableLogging.Size = new System.Drawing.Size(587, 29);
@@ -320,7 +333,7 @@
             // 
             // TB_BeatDetectionEvery
             // 
-            this.TB_BeatDetectionEvery.Location = new System.Drawing.Point(450, 837);
+            this.TB_BeatDetectionEvery.Location = new System.Drawing.Point(449, 897);
             this.TB_BeatDetectionEvery.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.TB_BeatDetectionEvery.Name = "TB_BeatDetectionEvery";
             this.TB_BeatDetectionEvery.Size = new System.Drawing.Size(72, 31);
@@ -331,7 +344,7 @@
             // LB_BeatDetectionEvery
             // 
             this.LB_BeatDetectionEvery.AutoSize = true;
-            this.LB_BeatDetectionEvery.Location = new System.Drawing.Point(82, 838);
+            this.LB_BeatDetectionEvery.Location = new System.Drawing.Point(81, 898);
             this.LB_BeatDetectionEvery.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.LB_BeatDetectionEvery.Name = "LB_BeatDetectionEvery";
             this.LB_BeatDetectionEvery.Size = new System.Drawing.Size(359, 25);
@@ -360,10 +373,10 @@
             this.LV_Lights.HideSelection = false;
             this.LV_Lights.LabelWrap = false;
             this.LV_Lights.Location = new System.Drawing.Point(908, 65);
-            this.LV_Lights.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.LV_Lights.Margin = new System.Windows.Forms.Padding(6);
             this.LV_Lights.Name = "LV_Lights";
             this.LV_Lights.ShowGroups = false;
-            this.LV_Lights.Size = new System.Drawing.Size(568, 760);
+            this.LV_Lights.Size = new System.Drawing.Size(568, 823);
             this.LV_Lights.TabIndex = 26;
             this.LV_Lights.UseCompatibleStateImageBehavior = false;
             this.LV_Lights.View = System.Windows.Forms.View.Details;
@@ -395,7 +408,7 @@
             "Beat is detected (Simple)",
             "Beat is detected (SubBand)",
             "15s before ending (flashing RED) & Track change"});
-            this.CB_ChangeLightsWhen.Location = new System.Drawing.Point(306, 788);
+            this.CB_ChangeLightsWhen.Location = new System.Drawing.Point(305, 848);
             this.CB_ChangeLightsWhen.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.CB_ChangeLightsWhen.Name = "CB_ChangeLightsWhen";
             this.CB_ChangeLightsWhen.Size = new System.Drawing.Size(558, 33);
@@ -404,7 +417,7 @@
             // LB_ChangeLightsWhen
             // 
             this.LB_ChangeLightsWhen.AutoSize = true;
-            this.LB_ChangeLightsWhen.Location = new System.Drawing.Point(84, 794);
+            this.LB_ChangeLightsWhen.Location = new System.Drawing.Point(83, 854);
             this.LB_ChangeLightsWhen.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.LB_ChangeLightsWhen.Name = "LB_ChangeLightsWhen";
             this.LB_ChangeLightsWhen.Size = new System.Drawing.Size(213, 25);
@@ -413,7 +426,7 @@
             // 
             // BT_ScanLights
             // 
-            this.BT_ScanLights.Location = new System.Drawing.Point(428, 719);
+            this.BT_ScanLights.Location = new System.Drawing.Point(427, 779);
             this.BT_ScanLights.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.BT_ScanLights.Name = "BT_ScanLights";
             this.BT_ScanLights.Size = new System.Drawing.Size(226, 46);
@@ -424,7 +437,7 @@
             // 
             // BT_ResetHue
             // 
-            this.BT_ResetHue.Location = new System.Drawing.Point(258, 719);
+            this.BT_ResetHue.Location = new System.Drawing.Point(257, 779);
             this.BT_ResetHue.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.BT_ResetHue.Name = "BT_ResetHue";
             this.BT_ResetHue.Size = new System.Drawing.Size(154, 46);
@@ -435,7 +448,7 @@
             // 
             // BT_PairHue
             // 
-            this.BT_PairHue.Location = new System.Drawing.Point(90, 719);
+            this.BT_PairHue.Location = new System.Drawing.Point(89, 779);
             this.BT_PairHue.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.BT_PairHue.Name = "BT_PairHue";
             this.BT_PairHue.Size = new System.Drawing.Size(152, 46);
@@ -448,7 +461,7 @@
             // 
             this.lblBridgeCnx.AutoSize = true;
             this.lblBridgeCnx.Font = new System.Drawing.Font("Segoe UI Semibold", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBridgeCnx.Location = new System.Drawing.Point(86, 633);
+            this.lblBridgeCnx.Location = new System.Drawing.Point(85, 693);
             this.lblBridgeCnx.Margin = new System.Windows.Forms.Padding(8, 0, 8, 0);
             this.lblBridgeCnx.MaximumSize = new System.Drawing.Size(1140, 296);
             this.lblBridgeCnx.Name = "lblBridgeCnx";
@@ -460,7 +473,7 @@
             // CB_AllowHue
             // 
             this.CB_AllowHue.AutoSize = true;
-            this.CB_AllowHue.Location = new System.Drawing.Point(54, 590);
+            this.CB_AllowHue.Location = new System.Drawing.Point(53, 650);
             this.CB_AllowHue.Margin = new System.Windows.Forms.Padding(8, 10, 8, 10);
             this.CB_AllowHue.Name = "CB_AllowHue";
             this.CB_AllowHue.Size = new System.Drawing.Size(859, 29);
@@ -590,7 +603,7 @@
             // LL_LikeADJLog
             // 
             this.LL_LikeADJLog.AutoSize = true;
-            this.LL_LikeADJLog.Location = new System.Drawing.Point(888, 1142);
+            this.LL_LikeADJLog.Location = new System.Drawing.Point(888, 1207);
             this.LL_LikeADJLog.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.LL_LikeADJLog.Name = "LL_LikeADJLog";
             this.LL_LikeADJLog.Size = new System.Drawing.Size(168, 25);
@@ -603,7 +616,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1510, 1262);
+            this.ClientSize = new System.Drawing.Size(1510, 1336);
             this.ControlBox = false;
             this.Controls.Add(this.LL_LikeADJLog);
             this.Controls.Add(this.LB_SeeLogFile);
@@ -613,7 +626,7 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label8);
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Settings";
@@ -674,5 +687,6 @@
         private System.Windows.Forms.LinkLabel LL_LikeADJLog;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox CB_AllowScanningMessageBox;
     }
 }

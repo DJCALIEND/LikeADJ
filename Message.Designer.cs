@@ -37,7 +37,7 @@
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(820, 0);
             this.ControlBox = false;
-            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Message";
