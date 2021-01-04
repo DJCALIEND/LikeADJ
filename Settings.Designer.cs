@@ -169,10 +169,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-<<<<<<< HEAD
-=======
             this.label2.ForeColor = System.Drawing.Color.Red;
->>>>>>> 2f14069b5c143bb54cb922479db7ee2ac4130cd3
             this.label2.Location = new System.Drawing.Point(207, 261);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
@@ -232,8 +229,6 @@
             this.LB_BrightnessLightsRange.TabIndex = 38;
             this.LB_BrightnessLightsRange.Text = "Brightness range of lights (on beat detection) :";
             // 
-<<<<<<< HEAD
-=======
             // RS_BrightnessLightsRange
             // 
             this.RS_BrightnessLightsRange.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -247,7 +242,6 @@
             this.RS_BrightnessLightsRange.TabIndex = 37;
             this.RS_BrightnessLightsRange.Value = 50;
             // 
->>>>>>> 2f14069b5c143bb54cb922479db7ee2ac4130cd3
             // LB_SelectGenres
             // 
             this.LB_SelectGenres.AutoSize = true;
@@ -269,8 +263,6 @@
             this.CB_AllowGenres.Text = "Allow Auto Mix according to Genres";
             this.CB_AllowGenres.UseVisualStyleBackColor = true;
             // 
-<<<<<<< HEAD
-=======
             // CCB_Genres
             // 
             this.CCB_Genres.CausesValidation = false;
@@ -286,7 +278,6 @@
             this.CCB_Genres.TabIndex = 34;
             this.CCB_Genres.ValueSeparator = ",";
             // 
->>>>>>> 2f14069b5c143bb54cb922479db7ee2ac4130cd3
             // TB_MinEnergy
             // 
             this.TB_MinEnergy.FormattingEnabled = true;
@@ -650,12 +641,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-<<<<<<< HEAD
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(755, 693);
-=======
             this.ClientSize = new System.Drawing.Size(755, 692);
->>>>>>> 2f14069b5c143bb54cb922479db7ee2ac4130cd3
             this.ControlBox = false;
             this.Controls.Add(this.LL_LikeADJLog);
             this.Controls.Add(this.LB_SeeLogFile);
