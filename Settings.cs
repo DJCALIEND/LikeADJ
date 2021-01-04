@@ -204,7 +204,7 @@ namespace MusicBeePlugin
 
             WebClient client = new WebClient();
             client.DownloadStringCompleted += Client_DownloadStringCompleted;
-            client.DownloadStringAsync(new Uri("https://www.meethue.com/api/nupnp"), null);
+            client.DownloadStringAsync(new Uri("https://discovery.meethue.com"), null);
             client.Dispose();
         }
 
