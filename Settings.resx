@@ -117,7 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox1.Text" xml:space="preserve">
-    <value>When the plugin is activated &amp; configured, select the first song to play in your playlist or shuffle your entire collection and the next song will be auto mixed following your choices below and so on...</value>
-  </data>
 </root>

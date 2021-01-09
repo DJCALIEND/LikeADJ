@@ -18,6 +18,7 @@ namespace MusicBeePlugin
         public JavaScriptSerializer jss = new JavaScriptSerializer();
         public List<JSONBridge> bridges;
         private bool isFormLoading = true;
+        private bool alreadypopulated = false;
         private bool isRescanLights = false;
         public string[] genresdistinct = { };
 
@@ -260,7 +261,7 @@ namespace MusicBeePlugin
                 return;
             }
        
-            PopulateBridgeLights();
+            if (!alreadypopulated) PopulateBridgeLights();
         }
 
         public async void PopulateBridgeLights()
@@ -342,6 +343,8 @@ namespace MusicBeePlugin
                 TB_BeatDetectionEvery.Visible = true;
                 CB_DisableLogging.Visible = true;
                 lblBridgeCnx.Visible = true;
+
+                alreadypopulated = true;
 
                 Plugin.Logger.Info("Connected to bridge : " + Plugin.theHueBridge.BridgeDeviceSpec.BridgeFriendlyName + " - Found " + i + " lights");
                 lblBridgeCnx.Text = "Connected to bridge : " + Plugin.theHueBridge.BridgeDeviceSpec.BridgeFriendlyName + "\nFound " + i + " lights";

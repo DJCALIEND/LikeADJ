@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Settings));
             this.LB_SeeLogFile = new System.Windows.Forms.Label();
             this.BT_Cancel = new System.Windows.Forms.Button();
             this.BT_Save = new System.Windows.Forms.Button();
@@ -40,8 +39,10 @@
             this.LB_NumberSongsPlaylist = new System.Windows.Forms.Label();
             this.CB_SaveSongsPlaylist = new System.Windows.Forms.CheckBox();
             this.LB_BrightnessLightsRange = new System.Windows.Forms.Label();
+            this.RS_BrightnessLightsRange = new MusicBeePlugin.SelectionRangeSlider();
             this.LB_SelectGenres = new System.Windows.Forms.Label();
             this.CB_AllowGenres = new System.Windows.Forms.CheckBox();
+            this.CCB_Genres = new MusicBeePlugin.CheckedComboBox();
             this.TB_MinEnergy = new System.Windows.Forms.ComboBox();
             this.LB_MinimumEnergy = new System.Windows.Forms.Label();
             this.CB_AllowEnergy = new System.Windows.Forms.CheckBox();
@@ -72,8 +73,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.LL_LikeADJLog = new System.Windows.Forms.LinkLabel();
-            this.RS_BrightnessLightsRange = new MusicBeePlugin.SelectionRangeSlider();
-            this.CCB_Genres = new MusicBeePlugin.CheckedComboBox();
             this.GB_LikeADJSettings.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -145,11 +144,11 @@
             this.GB_LikeADJSettings.Controls.Add(this.CB_AllowRatings);
             this.GB_LikeADJSettings.Controls.Add(this.CB_AllowInitialKey);
             this.GB_LikeADJSettings.Controls.Add(this.CB_AllowBPM);
-            this.GB_LikeADJSettings.Location = new System.Drawing.Point(3, 92);
+            this.GB_LikeADJSettings.Location = new System.Drawing.Point(3, 83);
             this.GB_LikeADJSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.GB_LikeADJSettings.Name = "GB_LikeADJSettings";
             this.GB_LikeADJSettings.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.GB_LikeADJSettings.Size = new System.Drawing.Size(748, 523);
+            this.GB_LikeADJSettings.Size = new System.Drawing.Size(791, 532);
             this.GB_LikeADJSettings.TabIndex = 25;
             this.GB_LikeADJSettings.TabStop = false;
             this.GB_LikeADJSettings.Text = "LikeADJ settings :";
@@ -168,29 +167,29 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(207, 261);
+            this.label2.Location = new System.Drawing.Point(200, 259);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(187, 9);
+            this.label2.Size = new System.Drawing.Size(263, 13);
             this.label2.TabIndex = 46;
             this.label2.Text = "(available only if one or more features checked above)";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(291, 217);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(229, 214);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(156, 9);
+            this.label1.Size = new System.Drawing.Size(221, 13);
             this.label1.TabIndex = 45;
-            this.label1.Text = "(SHIFT+DEL: Check all / DEL: Uncheck All)";
+            this.label1.Text = "(SHIFT+DEL: Check all or DEL: Uncheck All)";
             // 
             // TB_NumberSongsPlaylist
             // 
-            this.TB_NumberSongsPlaylist.Location = new System.Drawing.Point(264, 277);
+            this.TB_NumberSongsPlaylist.Location = new System.Drawing.Point(293, 277);
             this.TB_NumberSongsPlaylist.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.TB_NumberSongsPlaylist.Name = "TB_NumberSongsPlaylist";
             this.TB_NumberSongsPlaylist.Size = new System.Drawing.Size(38, 20);
@@ -201,7 +200,7 @@
             // LB_NumberSongsPlaylist
             // 
             this.LB_NumberSongsPlaylist.AutoSize = true;
-            this.LB_NumberSongsPlaylist.Location = new System.Drawing.Point(24, 280);
+            this.LB_NumberSongsPlaylist.Location = new System.Drawing.Point(53, 280);
             this.LB_NumberSongsPlaylist.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LB_NumberSongsPlaylist.Name = "LB_NumberSongsPlaylist";
             this.LB_NumberSongsPlaylist.Size = new System.Drawing.Size(232, 13);
@@ -222,7 +221,7 @@
             // LB_BrightnessLightsRange
             // 
             this.LB_BrightnessLightsRange.AutoSize = true;
-            this.LB_BrightnessLightsRange.Location = new System.Drawing.Point(452, 475);
+            this.LB_BrightnessLightsRange.Location = new System.Drawing.Point(483, 475);
             this.LB_BrightnessLightsRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LB_BrightnessLightsRange.Name = "LB_BrightnessLightsRange";
             this.LB_BrightnessLightsRange.Size = new System.Drawing.Size(223, 13);
@@ -232,7 +231,7 @@
             // RS_BrightnessLightsRange
             // 
             this.RS_BrightnessLightsRange.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.RS_BrightnessLightsRange.Location = new System.Drawing.Point(454, 495);
+            this.RS_BrightnessLightsRange.Location = new System.Drawing.Point(485, 495);
             this.RS_BrightnessLightsRange.Max = 255;
             this.RS_BrightnessLightsRange.Min = 0;
             this.RS_BrightnessLightsRange.Name = "RS_BrightnessLightsRange";
@@ -353,7 +352,7 @@
             // LB_Lights
             // 
             this.LB_Lights.AutoSize = true;
-            this.LB_Lights.Location = new System.Drawing.Point(451, 18);
+            this.LB_Lights.Location = new System.Drawing.Point(482, 18);
             this.LB_Lights.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LB_Lights.Name = "LB_Lights";
             this.LB_Lights.Size = new System.Drawing.Size(132, 13);
@@ -371,7 +370,7 @@
             this.LV_Lights.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.LV_Lights.HideSelection = false;
             this.LV_Lights.LabelWrap = false;
-            this.LV_Lights.Location = new System.Drawing.Point(454, 34);
+            this.LV_Lights.Location = new System.Drawing.Point(485, 34);
             this.LV_Lights.Name = "LV_Lights";
             this.LV_Lights.ShowGroups = false;
             this.LV_Lights.Size = new System.Drawing.Size(286, 430);
@@ -567,17 +566,18 @@
             this.textBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(748, 33);
+            this.textBox1.Size = new System.Drawing.Size(791, 24);
             this.textBox1.TabIndex = 24;
             this.textBox1.TabStop = false;
-            this.textBox1.Text = resources.GetString("textBox1.Text");
+            this.textBox1.Text = "When the plugin is activated & configured, shuffle your entire collection and the" +
+    " next song will be auto mixed following your choices below and so on...";
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(72, 22);
+            this.label7.Location = new System.Drawing.Point(94, 22);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(605, 13);
@@ -589,7 +589,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(94, 9);
+            this.label8.Location = new System.Drawing.Point(116, 9);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(560, 13);
@@ -609,41 +609,12 @@
             this.LL_LikeADJLog.Text = "mb_LikeADJ.log";
             this.LL_LikeADJLog.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LL_LikeADJLog_LinkClicked);
             // 
-            // RS_BrightnessLightsRange
-            // 
-            this.RS_BrightnessLightsRange.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.RS_BrightnessLightsRange.Location = new System.Drawing.Point(454, 495);
-            this.RS_BrightnessLightsRange.Max = 255;
-            this.RS_BrightnessLightsRange.Min = 0;
-            this.RS_BrightnessLightsRange.Name = "RS_BrightnessLightsRange";
-            this.RS_BrightnessLightsRange.SelectedMax = 255;
-            this.RS_BrightnessLightsRange.SelectedMin = 0;
-            this.RS_BrightnessLightsRange.Size = new System.Drawing.Size(287, 20);
-            this.RS_BrightnessLightsRange.TabIndex = 37;
-            this.RS_BrightnessLightsRange.Value = 50;
-            // 
-            // CCB_Genres
-            // 
-            this.CCB_Genres.CausesValidation = false;
-            this.CCB_Genres.CheckOnClick = true;
-            this.CCB_Genres.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.CCB_Genres.DropDownHeight = 1;
-            this.CCB_Genres.FormattingEnabled = true;
-            this.CCB_Genres.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.CCB_Genres.IntegralHeight = false;
-            this.CCB_Genres.Location = new System.Drawing.Point(142, 229);
-            this.CCB_Genres.Name = "CCB_Genres";
-            this.CCB_Genres.Size = new System.Drawing.Size(306, 21);
-            this.CCB_Genres.TabIndex = 34;
-            this.CCB_Genres.ValueSeparator = ",";
-            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(755, 693);
-            this.ClientSize = new System.Drawing.Size(755, 692);
+            this.ClientSize = new System.Drawing.Size(796, 692);
             this.ControlBox = false;
             this.Controls.Add(this.LL_LikeADJLog);
             this.Controls.Add(this.LB_SeeLogFile);
