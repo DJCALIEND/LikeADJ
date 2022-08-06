@@ -592,10 +592,10 @@
             this.label8.Location = new System.Drawing.Point(116, 9);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(560, 13);
+            this.label8.Size = new System.Drawing.Size(561, 13);
             this.label8.TabIndex = 22;
             this.label8.Text = "Auto Mix your songs according to BPM, Initial Key (Camelot and Open Key), Energy," +
-    " Ratings, Genres and Hue ligthing";
+    " Ratings, Genres with Hue ligthing";
             this.label8.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // LL_LikeADJLog

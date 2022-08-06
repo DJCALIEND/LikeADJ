@@ -61,8 +61,7 @@ namespace MusicBeePlugin
         public string playlistName = "LikeADJ History "+ DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss");
         public string[] mbPlaylistSongFiles = new string[1];
         public bool isfirstsong = true;
-        MetaDataType MetaDataTypeKey = new MetaDataType();
-        MetaDataType MetaDataTypeEnergy = new MetaDataType();
+        MetaDataType MetaDataTypeKey, MetaDataTypeEnergy = new MetaDataType();
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -70,7 +69,7 @@ namespace MusicBeePlugin
             mbApiInterface.Initialise(apiInterfacePtr);
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "LikeADJ";
-            about.Description = "Auto Mix your songs according to \nBPM, Initial Key, Energy, Track Rating, Genre and Hue lighting";
+            about.Description = "Auto Mix your songs according to \nBPM, Initial Key, Energy, Track Rating, Genre with Hue lighting";
             about.Author = "DJC👽D - marc.giraudou@outlook.com - 2022";
             about.TargetApplication = "";
             about.Type = PluginType.General;
@@ -105,7 +104,7 @@ namespace MusicBeePlugin
             LikeADJTimerRedAlertEndOfSong.Elapsed += new ElapsedEventHandler(RedAlertEndOfSong);
 
             LikeADJVersion = about.VersionMajor + "." + about.VersionMinor + "." + about.Revision;
-            Logger.Info("Starting LikeADJ " + LikeADJVersion + " RC plugin by DJC👽D...");
+            Logger.Info("Starting LikeADJ " + LikeADJVersion + " plugin by DJC👽D...");
 
             if (MusicBeeisportable) Logger.Info("MusicBee is portable. Using [" + Application.StartupPath + "] to save LikeADJ files.");
             else Logger.Info("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
@@ -115,42 +114,45 @@ namespace MusicBeePlugin
             mbApiInterface.MB_AddMenuItem("context.Main/Configure LikeADJ plugin", "LikeADJ", ConfigurePlugin);
 
             Logger.Info("Scanning for Custom Tag Key and Custom Tag Energy position...");
+            bool foundmetadatatypekey = false;
+            bool foundmetadatatypeenergy = false;
 
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom1) == "Key") MetaDataTypeKey = MetaDataType.Custom1;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom2) == "Key") MetaDataTypeKey = MetaDataType.Custom2;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom3) == "Key") MetaDataTypeKey = MetaDataType.Custom3;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom4) == "Key") MetaDataTypeKey = MetaDataType.Custom4;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom5) == "Key") MetaDataTypeKey = MetaDataType.Custom5;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom6) == "Key") MetaDataTypeKey = MetaDataType.Custom6;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom7) == "Key") MetaDataTypeKey = MetaDataType.Custom7;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom8) == "Key") MetaDataTypeKey = MetaDataType.Custom8;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom9) == "Key") MetaDataTypeKey = MetaDataType.Custom9;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom10) == "Key") MetaDataTypeKey = MetaDataType.Custom10;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom11) == "Key") MetaDataTypeKey = MetaDataType.Custom11;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom12) == "Key") MetaDataTypeKey = MetaDataType.Custom12;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom13) == "Key") MetaDataTypeKey = MetaDataType.Custom13;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom14) == "Key") MetaDataTypeKey = MetaDataType.Custom14;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom15) == "Key") MetaDataTypeKey = MetaDataType.Custom15;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom16) == "Key") MetaDataTypeKey = MetaDataType.Custom16;
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom1) == "Key") { MetaDataTypeKey = MetaDataType.Custom1; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom2) == "Key") { MetaDataTypeKey = MetaDataType.Custom2; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom3) == "Key") { MetaDataTypeKey = MetaDataType.Custom3; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom4) == "Key") { MetaDataTypeKey = MetaDataType.Custom4; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom5) == "Key") { MetaDataTypeKey = MetaDataType.Custom5; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom6) == "Key") { MetaDataTypeKey = MetaDataType.Custom6; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom7) == "Key") { MetaDataTypeKey = MetaDataType.Custom7; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom8) == "Key") { MetaDataTypeKey = MetaDataType.Custom8; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom9) == "Key") { MetaDataTypeKey = MetaDataType.Custom9; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom10) == "Key") { MetaDataTypeKey = MetaDataType.Custom10; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom11) == "Key") { MetaDataTypeKey = MetaDataType.Custom11; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom12) == "Key") { MetaDataTypeKey = MetaDataType.Custom12; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom13) == "Key") { MetaDataTypeKey = MetaDataType.Custom13; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom14) == "Key") { MetaDataTypeKey = MetaDataType.Custom14; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom15) == "Key") { MetaDataTypeKey = MetaDataType.Custom15; foundmetadatatypekey = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom16) == "Key") { MetaDataTypeKey = MetaDataType.Custom16; foundmetadatatypekey = true; }
 
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom1) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom1;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom2) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom2;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom3) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom3;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom4) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom4;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom5) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom5;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom6) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom6;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom7) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom7;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom8) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom8;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom9) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom9;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom10) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom10;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom11) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom11;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom12) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom12;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom13) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom13;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom14) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom14;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom15) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom15;
-            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom16) == "Energy") MetaDataTypeEnergy = MetaDataType.Custom16;
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom1) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom1; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom2) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom2; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom3) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom3; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom4) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom4; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom5) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom5; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom6) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom6; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom7) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom7; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom8) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom8; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom9) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom9; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom10) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom10; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom11) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom11; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom12) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom12; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom13) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom13; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom14) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom14; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom15) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom15; foundmetadatatypeenergy = true; }
+            if (mbApiInterface.Setting_GetFieldName(MetaDataType.Custom16) == "Energy") { MetaDataTypeEnergy = MetaDataType.Custom16; foundmetadatatypeenergy = true; }
 
-            Logger.Info("Found Custom Tag Key is " + MetaDataTypeKey + " and Custom Tag Energy is " + MetaDataTypeEnergy + ".");
+            if (foundmetadatatypekey) Logger.Info("Custom Tag Key is [" + MetaDataTypeKey + "]."); else Logger.Info("No Custom Tag for Key found.");
+            if (foundmetadatatypeenergy) Logger.Info("Custom Tag Energy is [" + MetaDataTypeEnergy + "]."); else Logger.Info("No Custom Tag for Energy found.");
 
             LoadSettings();
             return about;
