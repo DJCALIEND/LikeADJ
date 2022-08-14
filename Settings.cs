@@ -43,16 +43,49 @@ namespace MusicBeePlugin
             Array.Sort(genresdistinct);
             Plugin.Logger.Info("Scanning genres from the entire library finished.");
 
+            Plugin.Check_Custom_Key();
+
             if (File.Exists(Plugin.LikeADJIniFile))
             { 
                 Boolean.TryParse(Plugin.ini.Read("ALLOWBPM", "BPM"), out bool flag);
                 CB_AllowBPM.Checked = flag;
                 TB_DiffBPM.Text = Plugin.ini.Read("DIFFBPM", "BPM");
+
                 Boolean.TryParse(Plugin.ini.Read("ALLOWHARMONICKEY", "HARMONICKEY"), out flag);
                 CB_AllowInitialKey.Checked = flag;
+
+                if (!Plugin.foundmetadatatypekey)
+                {
+                    CB_AllowInitialKey.Enabled = false;
+                    CB_AllowInitialKey.Checked = false;
+                    LB_CustomTagKey.Text = "No Custom Tag Key found [Feature disabled]";
+                    LB_CustomTagKey.ForeColor = System.Drawing.Color.Red;
+                }
+                else
+                {
+                    LB_CustomTagKey.Text = "Custom Tag Key found [" + Plugin.MetaDataTypeKey + "]";
+                    LB_CustomTagKey.ForeColor = System.Drawing.Color.Green; 
+                }
+
                 Boolean.TryParse(Plugin.ini.Read("ALLOWENERGY", "ENERGY"), out flag);
                 CB_AllowEnergy.Checked = flag;
                 TB_MinEnergy.Text = Plugin.ini.Read("MINENERGY", "ENERGY");
+
+                if (!Plugin.foundmetadatatypeenergy)
+                {
+                    CB_AllowEnergy.Enabled = false;
+                    CB_AllowEnergy.Checked = false;
+                    LB_MinimumEnergy.Enabled = false;
+                    TB_MinEnergy.Enabled = false;
+                    LB_CustomTagEnergy.Text = "No Custom Tag Energy found [Feature disabled]";
+                    LB_CustomTagEnergy.ForeColor = System.Drawing.Color.Red;
+                }
+                else
+                {
+                    LB_CustomTagEnergy.ForeColor = System.Drawing.Color.Green;
+                    LB_CustomTagEnergy.Text = "Custom Tag Energy found [" + Plugin.MetaDataTypeEnergy + "]";
+                }
+
                 Boolean.TryParse(Plugin.ini.Read("ALLOWRATINGS", "RATINGS"), out flag);
                 CB_AllowRatings.Checked = flag;
                 TB_MinRatings.Text = Plugin.ini.Read("MINRATINGS", "RATINGS");
@@ -60,11 +93,26 @@ namespace MusicBeePlugin
                 CB_AllowGenres.Checked = flag;
                 CCB_Genres.Text = Plugin.ini.Read("GENRESSELECTED", "GENRES");
                 Plugin.genresAllowed = CCB_Genres.Text.Split(',').ToArray();
-                Boolean.TryParse(Plugin.ini.Read("SAVESONGSPLAYLIST", "PLAYLIST"), out flag);
-                CB_SaveSongsPlaylist.Checked = flag;
-                TB_NumberSongsPlaylist.Text = Plugin.ini.Read("NUMBERSONGSPLAYLIST", "PLAYLIST");
-                Boolean.TryParse(Plugin.ini.Read("ALLOWSCANNINGMESSAGEBOX", "GENERAL"), out flag);
-                CB_AllowScanningMessageBox.Checked = flag;
+
+                if (CB_AllowBPM.Checked || CB_AllowInitialKey.Checked || CB_AllowEnergy.Checked || CB_AllowRatings.Checked || CB_AllowGenres.Checked)
+                {
+                    CB_SaveSongsPlaylist.Enabled = true;
+                    LB_NumberSongsPlaylist.Enabled = true;
+                    TB_NumberSongsPlaylist.Enabled = true;
+
+                    Boolean.TryParse(Plugin.ini.Read("SAVESONGSPLAYLIST", "PLAYLIST"), out flag);
+                    CB_SaveSongsPlaylist.Checked = flag;
+                    TB_NumberSongsPlaylist.Text = Plugin.ini.Read("NUMBERSONGSPLAYLIST", "PLAYLIST");
+                    Boolean.TryParse(Plugin.ini.Read("ALLOWSCANNINGMESSAGEBOX", "GENERAL"), out flag);
+                    CB_AllowScanningMessageBox.Checked = flag;
+                }
+                else 
+                {
+                    CB_SaveSongsPlaylist.Enabled = false;
+                    LB_NumberSongsPlaylist.Enabled = false;
+                    TB_NumberSongsPlaylist.Enabled = false;
+                }
+
                 Boolean.TryParse(Plugin.ini.Read("ALLOWHUE", "HUE"), out flag);
                 CB_AllowHue.Checked = flag;
                 Plugin.APIKey = Plugin.ini.Read("APIKEY", "HUE");
@@ -138,6 +186,9 @@ namespace MusicBeePlugin
                 LB_BeatDetectionEvery.Visible = false;
                 TB_BeatDetectionEvery.Visible = false;
                 CB_DisableLogging.Visible = false;
+                CB_SaveSongsPlaylist.Enabled = false;
+                LB_NumberSongsPlaylist.Enabled = false;
+                TB_NumberSongsPlaylist.Enabled = false;
 
                 CCB_Genres.MaxDropDownItems = 10;
                 CCB_Genres.DisplayMember = "Name";
@@ -535,6 +586,48 @@ namespace MusicBeePlugin
         private void LL_LikeADJLog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Plugin.ViewLogFile(sender, e);
+        }
+
+        private void CB_AllowBPM_CheckStateChanged(object sender, EventArgs e)
+        {
+            Toggle_SaveSongsPlaylist();
+        }
+
+        private void CB_AllowInitialKey_CheckStateChanged(object sender, EventArgs e)
+        {
+            Toggle_SaveSongsPlaylist();
+        }
+
+        private void CB_AllowEnergy_CheckStateChanged(object sender, EventArgs e)
+        {
+            Toggle_SaveSongsPlaylist();
+        }
+
+        private void CB_AllowRatings_CheckStateChanged(object sender, EventArgs e)
+        {
+            Toggle_SaveSongsPlaylist();
+        }
+
+        private void CB_AllowGenres_CheckStateChanged(object sender, EventArgs e)
+        {
+            Toggle_SaveSongsPlaylist();
+        }
+
+        private void Toggle_SaveSongsPlaylist()
+        {
+            if (CB_AllowBPM.Checked || CB_AllowInitialKey.Checked || CB_AllowEnergy.Checked || CB_AllowRatings.Checked || CB_AllowGenres.Checked)
+            {
+                CB_SaveSongsPlaylist.Enabled = true;
+                LB_NumberSongsPlaylist.Enabled = true;
+                TB_NumberSongsPlaylist.Enabled = true;
+            }
+            else
+            {
+                CB_SaveSongsPlaylist.Checked = false;
+                CB_SaveSongsPlaylist.Enabled = false;
+                LB_NumberSongsPlaylist.Enabled = false;
+                TB_NumberSongsPlaylist.Enabled = false;
+            }
         }
     }
 }
