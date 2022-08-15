@@ -108,6 +108,7 @@ namespace MusicBeePlugin
                 }
                 else 
                 {
+                    CB_SaveSongsPlaylist.Checked = false;
                     CB_SaveSongsPlaylist.Enabled = false;
                     LB_NumberSongsPlaylist.Enabled = false;
                     TB_NumberSongsPlaylist.Enabled = false;
@@ -186,6 +187,7 @@ namespace MusicBeePlugin
                 LB_BeatDetectionEvery.Visible = false;
                 TB_BeatDetectionEvery.Visible = false;
                 CB_DisableLogging.Visible = false;
+                CB_SaveSongsPlaylist.Checked = false;
                 CB_SaveSongsPlaylist.Enabled = false;
                 LB_NumberSongsPlaylist.Enabled = false;
                 TB_NumberSongsPlaylist.Enabled = false;
@@ -198,6 +200,34 @@ namespace MusicBeePlugin
                 {
                     CCBoxItem item = new CCBoxItem(genresdistinct[i], i);
                     CCB_Genres.Items.Add(item);
+                }
+
+                if (!Plugin.foundmetadatatypekey)
+                {
+                    CB_AllowInitialKey.Enabled = false;
+                    CB_AllowInitialKey.Checked = false;
+                    LB_CustomTagKey.Text = "No Custom Tag Key found [Feature disabled]";
+                    LB_CustomTagKey.ForeColor = System.Drawing.Color.Red;
+                }
+                else
+                {
+                    LB_CustomTagKey.Text = "Custom Tag Key found [" + Plugin.MetaDataTypeKey + "]";
+                    LB_CustomTagKey.ForeColor = System.Drawing.Color.Green;
+                }
+
+                if (!Plugin.foundmetadatatypeenergy)
+                {
+                    CB_AllowEnergy.Enabled = false;
+                    CB_AllowEnergy.Checked = false;
+                    LB_MinimumEnergy.Enabled = false;
+                    TB_MinEnergy.Enabled = false;
+                    LB_CustomTagEnergy.Text = "No Custom Tag Energy found [Feature disabled]";
+                    LB_CustomTagEnergy.ForeColor = System.Drawing.Color.Red;
+                }
+                else
+                {
+                    LB_CustomTagEnergy.ForeColor = System.Drawing.Color.Green;
+                    LB_CustomTagEnergy.Text = "Custom Tag Energy found [" + Plugin.MetaDataTypeEnergy + "]";
                 }
             }
 
