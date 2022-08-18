@@ -24,6 +24,7 @@ namespace MusicBeePlugin
 {
     using CustomExtensions;
     using System.Globalization;
+    using System.Threading;
 
     public partial class Plugin
     {
@@ -77,7 +78,7 @@ namespace MusicBeePlugin
             about.Type = PluginType.General;
             about.VersionMajor = 2;
             about.VersionMinor = 0;
-            about.Revision = 18;
+            about.Revision = 19;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
@@ -106,11 +107,12 @@ namespace MusicBeePlugin
             LikeADJTimerRedAlertEndOfSong.Elapsed += new ElapsedEventHandler(RedAlertEndOfSong);
 
             LikeADJVersion = about.VersionMajor + "." + about.VersionMinor + "." + about.Revision;
-            Logger.Info("Starting LikeADJ " + LikeADJVersion + " plugin by DJC👽D...");
+            Logger.Info("Starting LikeADJ " + LikeADJVersion + " plugin by DJC👽D... " + "[ MusicBee " + Application.ProductVersion + " ]");
 
             if (MusicBeeisportable) Logger.Info("MusicBee is portable. Using [" + Application.StartupPath + "] to save LikeADJ files.");
             else Logger.Info("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
 
+            mbApiInterface.MB_AddMenuItem("context.Main/Start LikeADJ", "LikeADJ", StartLikeADJ);
             mbApiInterface.MB_AddMenuItem("context.Main/Generate a LikeADJ playlist with all songs in your library", "LikeADJ", GeneratePlaylist);
             mbApiInterface.MB_AddMenuItem("context.Main/View the mb_LikeADJ.log", "LikeADJ", ViewLogFile);
             mbApiInterface.MB_AddMenuItem("context.Main/Configure LikeADJ plugin", "LikeADJ", ConfigurePlugin);
@@ -176,6 +178,11 @@ namespace MusicBeePlugin
             f2.Show();
         }
 
+        public void StartLikeADJ(object sender, EventArgs e)
+        {
+            mbApiInterface.NowPlayingList_PlayLibraryShuffled();
+        }
+
         public void GeneratePlaylist(object sender, EventArgs e)
         {
             if (!allowbpm && !allowharmonickey && !allowenergy && !allowratings && !allowgenres) MessageBox.Show("You must activate at least one feature (BPM, Initial Key, Energy, Track Rating or Genre) to generate a LikeADJ playlist !!!", "LikeADJ " + LikeADJVersion);
@@ -196,6 +203,7 @@ namespace MusicBeePlugin
 
                 mbApiInterface.NowPlayingList_Clear();
                 mbApiInterface.NowPlayingList_PlayLibraryShuffled();
+                //Thread.Sleep(10000); // Strange bug I have to wait else the player don't stop and NotificationType.TrackChanged is enclenched !!!!
                 mbApiInterface.Player_Stop();
 
                 do
@@ -442,7 +450,7 @@ namespace MusicBeePlugin
        
         public void Close(PluginCloseReason reason)
         {
-            Logger.Info("Closing LikeADJ " + LikeADJVersion + " RC plugin by DJC👽D...");
+            Logger.Info("Closing LikeADJ " + LikeADJVersion + " plugin by DJC👽D...");
         }
 
         public void Uninstall()
@@ -464,7 +472,13 @@ namespace MusicBeePlugin
                             break;
                     }
                     break;
-                case NotificationType.TrackChanged:                   
+                case NotificationType.TrackChanged:
+
+                    if (mbApiInterface.Player_GetShuffle())
+                    {
+                        Logger.Info("Deactivating Shuffle mode of MusicBee as library is already shuffled...");
+                        mbApiInterface.Player_SetShuffle(false);
+                    }
 
                     if (isSettingsChanged) LoadSettings();
 

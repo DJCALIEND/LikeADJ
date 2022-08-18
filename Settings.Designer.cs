@@ -182,7 +182,7 @@
             // CB_AllowScanningMessageBox
             // 
             this.CB_AllowScanningMessageBox.AutoSize = true;
-            this.CB_AllowScanningMessageBox.Location = new System.Drawing.Point(27, 341);
+            this.CB_AllowScanningMessageBox.Location = new System.Drawing.Point(27, 349);
             this.CB_AllowScanningMessageBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.CB_AllowScanningMessageBox.Name = "CB_AllowScanningMessageBox";
             this.CB_AllowScanningMessageBox.Size = new System.Drawing.Size(180, 17);
@@ -203,7 +203,7 @@
             // 
             // TB_NumberSongsPlaylist
             // 
-            this.TB_NumberSongsPlaylist.Location = new System.Drawing.Point(293, 312);
+            this.TB_NumberSongsPlaylist.Location = new System.Drawing.Point(316, 316);
             this.TB_NumberSongsPlaylist.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.TB_NumberSongsPlaylist.Name = "TB_NumberSongsPlaylist";
             this.TB_NumberSongsPlaylist.Size = new System.Drawing.Size(38, 20);
@@ -214,12 +214,12 @@
             // LB_NumberSongsPlaylist
             // 
             this.LB_NumberSongsPlaylist.AutoSize = true;
-            this.LB_NumberSongsPlaylist.Location = new System.Drawing.Point(53, 315);
+            this.LB_NumberSongsPlaylist.Location = new System.Drawing.Point(24, 319);
             this.LB_NumberSongsPlaylist.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LB_NumberSongsPlaylist.Name = "LB_NumberSongsPlaylist";
-            this.LB_NumberSongsPlaylist.Size = new System.Drawing.Size(232, 13);
+            this.LB_NumberSongsPlaylist.Size = new System.Drawing.Size(294, 13);
             this.LB_NumberSongsPlaylist.TabIndex = 43;
-            this.LB_NumberSongsPlaylist.Text = "Number of songs to add into a LikeADJ playlist :";
+            this.LB_NumberSongsPlaylist.Text = "Number of songs to add when generating a LikeADJ playlist :";
             // 
             // CB_SaveSongsPlaylist
             // 
@@ -337,7 +337,7 @@
             // CB_DisableLogging
             // 
             this.CB_DisableLogging.AutoSize = true;
-            this.CB_DisableLogging.Location = new System.Drawing.Point(44, 524);
+            this.CB_DisableLogging.Location = new System.Drawing.Point(44, 532);
             this.CB_DisableLogging.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.CB_DisableLogging.Name = "CB_DisableLogging";
             this.CB_DisableLogging.Size = new System.Drawing.Size(294, 17);
@@ -347,7 +347,7 @@
             // 
             // TB_BeatDetectionEvery
             // 
-            this.TB_BeatDetectionEvery.Location = new System.Drawing.Point(224, 501);
+            this.TB_BeatDetectionEvery.Location = new System.Drawing.Point(224, 509);
             this.TB_BeatDetectionEvery.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.TB_BeatDetectionEvery.Name = "TB_BeatDetectionEvery";
             this.TB_BeatDetectionEvery.Size = new System.Drawing.Size(38, 20);
@@ -358,7 +358,7 @@
             // LB_BeatDetectionEvery
             // 
             this.LB_BeatDetectionEvery.AutoSize = true;
-            this.LB_BeatDetectionEvery.Location = new System.Drawing.Point(40, 502);
+            this.LB_BeatDetectionEvery.Location = new System.Drawing.Point(40, 510);
             this.LB_BeatDetectionEvery.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LB_BeatDetectionEvery.Name = "LB_BeatDetectionEvery";
             this.LB_BeatDetectionEvery.Size = new System.Drawing.Size(176, 13);
@@ -421,7 +421,7 @@
             "Beat is detected (Simple)",
             "Beat is detected (SubBand)",
             "15s before ending (flashing RED) & Track change"});
-            this.CB_ChangeLightsWhen.Location = new System.Drawing.Point(152, 476);
+            this.CB_ChangeLightsWhen.Location = new System.Drawing.Point(152, 484);
             this.CB_ChangeLightsWhen.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.CB_ChangeLightsWhen.Name = "CB_ChangeLightsWhen";
             this.CB_ChangeLightsWhen.Size = new System.Drawing.Size(281, 21);
@@ -430,7 +430,7 @@
             // LB_ChangeLightsWhen
             // 
             this.LB_ChangeLightsWhen.AutoSize = true;
-            this.LB_ChangeLightsWhen.Location = new System.Drawing.Point(42, 479);
+            this.LB_ChangeLightsWhen.Location = new System.Drawing.Point(42, 487);
             this.LB_ChangeLightsWhen.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LB_ChangeLightsWhen.Name = "LB_ChangeLightsWhen";
             this.LB_ChangeLightsWhen.Size = new System.Drawing.Size(106, 13);
@@ -439,7 +439,7 @@
             // 
             // BT_ScanLights
             // 
-            this.BT_ScanLights.Location = new System.Drawing.Point(214, 440);
+            this.BT_ScanLights.Location = new System.Drawing.Point(214, 448);
             this.BT_ScanLights.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.BT_ScanLights.Name = "BT_ScanLights";
             this.BT_ScanLights.Size = new System.Drawing.Size(113, 24);
@@ -450,7 +450,7 @@
             // 
             // BT_ResetHue
             // 
-            this.BT_ResetHue.Location = new System.Drawing.Point(128, 440);
+            this.BT_ResetHue.Location = new System.Drawing.Point(128, 448);
             this.BT_ResetHue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.BT_ResetHue.Name = "BT_ResetHue";
             this.BT_ResetHue.Size = new System.Drawing.Size(77, 24);
@@ -461,7 +461,7 @@
             // 
             // BT_PairHue
             // 
-            this.BT_PairHue.Location = new System.Drawing.Point(44, 440);
+            this.BT_PairHue.Location = new System.Drawing.Point(44, 448);
             this.BT_PairHue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.BT_PairHue.Name = "BT_PairHue";
             this.BT_PairHue.Size = new System.Drawing.Size(76, 24);
@@ -474,7 +474,7 @@
             // 
             this.lblBridgeCnx.AutoSize = true;
             this.lblBridgeCnx.Font = new System.Drawing.Font("Segoe UI Semibold", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBridgeCnx.Location = new System.Drawing.Point(42, 395);
+            this.lblBridgeCnx.Location = new System.Drawing.Point(42, 403);
             this.lblBridgeCnx.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBridgeCnx.MaximumSize = new System.Drawing.Size(570, 154);
             this.lblBridgeCnx.Name = "lblBridgeCnx";
@@ -486,7 +486,7 @@
             // CB_AllowHue
             // 
             this.CB_AllowHue.AutoSize = true;
-            this.CB_AllowHue.Location = new System.Drawing.Point(26, 373);
+            this.CB_AllowHue.Location = new System.Drawing.Point(26, 381);
             this.CB_AllowHue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.CB_AllowHue.Name = "CB_AllowHue";
             this.CB_AllowHue.Size = new System.Drawing.Size(423, 17);
@@ -588,8 +588,8 @@
             this.textBox1.Size = new System.Drawing.Size(791, 24);
             this.textBox1.TabIndex = 24;
             this.textBox1.TabStop = false;
-            this.textBox1.Text = "When the plugin is activated & configured, shuffle your entire collection and the" +
-    " next song will be auto mixed following your choices below and so on...";
+            this.textBox1.Text = "When the plugin is activated & configured, click on \'Start LikeADJ\' via Right+Cli" +
+    "ck on the main panel (the panel with all your tracks) of MusicBee.";
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label7
