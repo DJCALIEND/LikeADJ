@@ -560,10 +560,10 @@
             this.CB_AllowInitialKey.Location = new System.Drawing.Point(27, 83);
             this.CB_AllowInitialKey.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.CB_AllowInitialKey.Name = "CB_AllowInitialKey";
-            this.CB_AllowInitialKey.Size = new System.Drawing.Size(432, 17);
+            this.CB_AllowInitialKey.Size = new System.Drawing.Size(461, 17);
             this.CB_AllowInitialKey.TabIndex = 10;
-            this.CB_AllowInitialKey.Text = "Allow Auto Mix according to \'Initial Key\' (Camelot and/or Short Open Key notation" +
-    " only)";
+            this.CB_AllowInitialKey.Text = "Allow Auto Mix according to \'Initial Key\' (Camelot and/or Short/Long Open Key not" +
+    "ation only)";
             this.CB_AllowInitialKey.UseVisualStyleBackColor = true;
             this.CB_AllowInitialKey.CheckStateChanged += new System.EventHandler(this.CB_AllowInitialKey_CheckStateChanged);
             // 
@@ -608,13 +608,13 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(96, 9);
+            this.label8.Location = new System.Drawing.Point(85, 9);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(603, 13);
+            this.label8.Size = new System.Drawing.Size(632, 13);
             this.label8.TabIndex = 22;
-            this.label8.Text = "Auto Mix your songs according to BPM, Initial Key (Camelot and/or Short Open Key)" +
-    ", Energy, Ratings, Genres with Hue ligthing";
+            this.label8.Text = "Auto Mix your songs according to BPM, Initial Key (Camelot and/or Short/Long Open" +
+    " Key), Energy, Ratings, Genres with Hue ligthing";
             this.label8.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // LL_LikeADJLog

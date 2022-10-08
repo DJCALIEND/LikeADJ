@@ -51,8 +51,8 @@ namespace MusicBeePlugin
         public static volatile string APIKey;
         public static Hue theHueBridge = new Hue();
         public static HueLight[] allLights;
-        public static int[] lightIndices = new int[20];
-        public static int[] lightIndicesAllowed = new int[20];
+        public static int[] lightIndices = new int[50];
+        public static int[] lightIndicesAllowed = new int[50];
         public static readonly Random rand = new Random();
         public static readonly System.Timers.Timer LikeADJTimerBeatDetectedSimple = new System.Timers.Timer();
         public static readonly System.Timers.Timer LikeADJTimerBeatDetectedSubBand = new System.Timers.Timer();
@@ -78,7 +78,7 @@ namespace MusicBeePlugin
             about.Type = PluginType.General;
             about.VersionMajor = 2;
             about.VersionMinor = 0;
-            about.Revision = 19;
+            about.Revision = 20;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
@@ -116,11 +116,28 @@ namespace MusicBeePlugin
             mbApiInterface.MB_AddMenuItem("context.Main/Generate a LikeADJ playlist with all songs in your library", "LikeADJ", GeneratePlaylist);
             mbApiInterface.MB_AddMenuItem("context.Main/View the mb_LikeADJ.log", "LikeADJ", ViewLogFile);
             mbApiInterface.MB_AddMenuItem("context.Main/Configure LikeADJ plugin", "LikeADJ", ConfigurePlugin);
+            mbApiInterface.MB_AddMenuItem("context.Main/Deactivate LikeADJ plugin", "LikeADJ", DeactivateLikeADJ);
 
             Check_Custom_Key();
 
             LoadSettings();
             return about;
+        }
+
+        public static void DeactivateLikeADJ(object sender, EventArgs e)
+        {
+            Plugin.Logger.Info("Deactivating LikeADJ plugin...");
+            Plugin.ini.Write("ALLOWBPM", "false", "BPM");
+            Plugin.ini.Write("ALLOWHARMONICKEY", "false", "HARMONICKEY");
+            Plugin.ini.Write("ALLOWENERGY", "false", "ENERGY");
+            Plugin.ini.Write("ALLOWRATINGS", "false", "RATINGS");
+            Plugin.ini.Write("ALLOWGENRES", "false", "GENRES");
+            Plugin.ini.Write("SAVESONGSPLAYLIST", "false", "PLAYLIST");
+            Plugin.ini.Write("ALLOWSCANNINGMESSAGEBOX", "false", "GENERAL");
+            Plugin.ini.Write("ALLOWHUE", "false", "HUE");
+
+            Plugin.isSettingsChanged = true;
+            Plugin.LoadSettings();
         }
 
         public static void Check_Custom_Key()

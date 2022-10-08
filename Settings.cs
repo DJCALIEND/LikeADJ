@@ -379,6 +379,7 @@ namespace MusicBeePlugin
                 REST r = new REST(endpoint);
 
                 string result = await r.GET("/api/" + Plugin.APIKey + "/lights");
+
                 if (result == null || result.Contains("error") || result == "" || result == "{}")
                 {
                     MessageBox.Show("Error", "You have not paired your lights with the Hue bridge.\nPlease pair your lights before with official hue application for Android or IOS.", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -395,7 +396,7 @@ namespace MusicBeePlugin
                 }
                 IList<JToken> allPaired = idxObj.Children().ToList();
                 Plugin.allLights = new HueLight[allPaired.Count];
-
+                               
                 int i = 0;
                 foreach (JToken jt in allPaired)
                 {
