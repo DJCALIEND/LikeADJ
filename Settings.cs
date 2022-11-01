@@ -665,6 +665,7 @@ namespace MusicBeePlugin
                 CB_SaveSongsPlaylist.Enabled = false;
                 LB_NumberSongsPlaylist.Enabled = false;
                 TB_NumberSongsPlaylist.Enabled = false;
+                CB_AllowScanningMessageBox.Checked = false;
                 CB_AllowScanningMessageBox.Enabled = false;
             }
         }

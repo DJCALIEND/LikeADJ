@@ -603,7 +603,7 @@
             // CB_AllowHue
             // 
             this.CB_AllowHue.AutoSize = true;
-            this.CB_AllowHue.Location = new System.Drawing.Point(30, 437);
+            this.CB_AllowHue.Location = new System.Drawing.Point(31, 437);
             this.CB_AllowHue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.CB_AllowHue.Name = "CB_AllowHue";
             this.CB_AllowHue.Size = new System.Drawing.Size(423, 17);

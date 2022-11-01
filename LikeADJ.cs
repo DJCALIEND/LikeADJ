@@ -78,7 +78,7 @@ namespace MusicBeePlugin
             about.Type = PluginType.General;
             about.VersionMajor = 2;
             about.VersionMinor = 0;
-            about.Revision = 21;
+            about.Revision = 22;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
@@ -113,9 +113,9 @@ namespace MusicBeePlugin
             else Logger.Info("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
 
             mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Start", "LikeADJ", StartLikeADJ);
-            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Generate a playlist", "LikeADJ", GeneratePlaylist);
-            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - View the logfile", "LikeADJ", ViewLogFile);
             mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Configure", "LikeADJ", ConfigurePlugin);
+            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - View the logfile", "LikeADJ", ViewLogFile);
+            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Generate a playlist", "LikeADJ", GeneratePlaylist);
             mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Deactivate", "LikeADJ", DeactivateLikeADJ);
 
             Check_Custom_Key();
