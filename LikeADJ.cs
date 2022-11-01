@@ -44,7 +44,7 @@ namespace MusicBeePlugin
         public static SimpleLogger Logger;
         public static string LikeADJVersion, LikeADJIniFile;
         public static bool isSettingsChanged = false;
-        public static bool allowbpm, allowharmonickey, allowenergy, allowratings, allowgenres, savesongsplaylist, allowscanningmessagebox, allowhue;
+        public static bool allowbpm, allowharmonickey, allowenergy, allowratings, allowlove, allowgenres, savesongsplaylist, allowscanningmessagebox, allowhue;
         public static bool disablelogging, MusicBeeisportable;
         public static int DiffBPM, minenergy, minrattings, numbersongsplaylist, brightnesslightmin, brightnesslightmax, CountSongsPlaylist;
         public static string changelightswhen, BeatDetectionEvery;
@@ -72,13 +72,13 @@ namespace MusicBeePlugin
             mbApiInterface.Initialise(apiInterfacePtr);
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "LikeADJ";
-            about.Description = "Auto Mix your songs according to \nBPM, Initial Key, Energy, Track Rating, Genre with Hue lighting";
+            about.Description = "Auto Mix your songs according to \nBPM, Initial Key, Energy, Track Rating, Love, Genre with Hue lighting";
             about.Author = "DJC👽D - marc.giraudou@outlook.com - 2022";
             about.TargetApplication = "";
             about.Type = PluginType.General;
             about.VersionMajor = 2;
             about.VersionMinor = 0;
-            about.Revision = 20;
+            about.Revision = 21;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
@@ -112,11 +112,11 @@ namespace MusicBeePlugin
             if (MusicBeeisportable) Logger.Info("MusicBee is portable. Using [" + Application.StartupPath + "] to save LikeADJ files.");
             else Logger.Info("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
 
-            mbApiInterface.MB_AddMenuItem("context.Main/Start LikeADJ", "LikeADJ", StartLikeADJ);
-            mbApiInterface.MB_AddMenuItem("context.Main/Generate a LikeADJ playlist with all songs in your library", "LikeADJ", GeneratePlaylist);
-            mbApiInterface.MB_AddMenuItem("context.Main/View the mb_LikeADJ.log", "LikeADJ", ViewLogFile);
-            mbApiInterface.MB_AddMenuItem("context.Main/Configure LikeADJ plugin", "LikeADJ", ConfigurePlugin);
-            mbApiInterface.MB_AddMenuItem("context.Main/Deactivate LikeADJ plugin", "LikeADJ", DeactivateLikeADJ);
+            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Start", "LikeADJ", StartLikeADJ);
+            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Generate a playlist", "LikeADJ", GeneratePlaylist);
+            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - View the logfile", "LikeADJ", ViewLogFile);
+            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Configure", "LikeADJ", ConfigurePlugin);
+            mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Deactivate", "LikeADJ", DeactivateLikeADJ);
 
             Check_Custom_Key();
 
@@ -131,6 +131,7 @@ namespace MusicBeePlugin
             Plugin.ini.Write("ALLOWHARMONICKEY", "false", "HARMONICKEY");
             Plugin.ini.Write("ALLOWENERGY", "false", "ENERGY");
             Plugin.ini.Write("ALLOWRATINGS", "false", "RATINGS");
+            Plugin.ini.Write("ALLOWLOVE", "false", "LOVE");
             Plugin.ini.Write("ALLOWGENRES", "false", "GENRES");
             Plugin.ini.Write("SAVESONGSPLAYLIST", "false", "PLAYLIST");
             Plugin.ini.Write("ALLOWSCANNINGMESSAGEBOX", "false", "GENERAL");
@@ -202,7 +203,7 @@ namespace MusicBeePlugin
 
         public void GeneratePlaylist(object sender, EventArgs e)
         {
-            if (!allowbpm && !allowharmonickey && !allowenergy && !allowratings && !allowgenres) MessageBox.Show("You must activate at least one feature (BPM, Initial Key, Energy, Track Rating or Genre) to generate a LikeADJ playlist !!!", "LikeADJ " + LikeADJVersion);
+            if (!allowbpm && !allowharmonickey && !allowenergy && !allowratings && !allowlove && !allowgenres) MessageBox.Show("You must activate at least one feature (BPM, Initial Key, Energy, Track Rating, Love or Genre) to generate a LikeADJ playlist !!!", "LikeADJ " + LikeADJVersion);
             else
             {
                 Stopwatch timer = new Stopwatch();
@@ -232,6 +233,7 @@ namespace MusicBeePlugin
                     string CurrentSongKey = mbApiInterface.NowPlayingList_GetFileTag(CurrentSongIndex, MetaDataTypeKey);
                     string CurrentSongEnergy = mbApiInterface.NowPlayingList_GetFileTag(CurrentSongIndex, MetaDataTypeEnergy);
                     string CurrentSongRating = mbApiInterface.NowPlayingList_GetFileTag(CurrentSongIndex, MetaDataType.Rating);
+                    string CurrentSongLove = mbApiInterface.NowPlayingList_GetFileTag(CurrentSongIndex, MetaDataType.RatingLove);
                     string CurrentSongGenre = mbApiInterface.NowPlayingList_GetFileTag(CurrentSongIndex, MetaDataType.Genre);
                     string CurrentSongURL = mbApiInterface.NowPlayingList_GetFileProperty(CurrentSongIndex, FilePropertyType.Url);
 
@@ -251,7 +253,7 @@ namespace MusicBeePlugin
                     }
 
                     int NextSongIndex;
-                    string NextSongArtist, NextSongTitle, NextSongBPM, NextSongKey, NextSongEnergy, NextSongRating, NextSongGenre, NextSongURL;
+                    string NextSongArtist, NextSongTitle, NextSongBPM, NextSongKey, NextSongEnergy, NextSongRating, NextSongLove, NextSongGenre, NextSongURL;
 
                     string[] CountNowPlayingFiles = { };
                     mbApiInterface.NowPlayingList_QueryFilesEx("", out CountNowPlayingFiles);
@@ -269,6 +271,7 @@ namespace MusicBeePlugin
                         NextSongKey = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataTypeKey);
                         NextSongEnergy = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataTypeEnergy);
                         NextSongRating = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Rating);
+                        NextSongLove = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.RatingLove);
                         NextSongGenre = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Genre);
                         NextSongURL = mbApiInterface.NowPlayingList_GetFileProperty(NextSongIndex, FilePropertyType.Url);
 
@@ -295,7 +298,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Logger.Warning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -340,7 +343,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Logger.Warning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -366,7 +369,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Logger.Warning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -388,7 +391,7 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Logger.Warning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -410,12 +413,35 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Logger.Warning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                Logger.Warning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
                             }
                         }
+
+                        if (allowlove)
+                        {
+                            if (NextSongLove != string.Empty)
+                            {
+                                if (NextSongLove=="L") FoundNextSong = true;
+                                else
+                                {
+                                    FoundNextSong = false;
+                                    mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                    mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                Logger.Warning("Skipping Song without Love : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
+                                FoundNextSong = false;
+                                mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                continue;
+                            }
+                        }
+
                     } while (!FoundNextSong);
 
                     if (NBSongsPassed >= CountNowPlayingFiles.Length) { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); break; }
@@ -429,7 +455,7 @@ namespace MusicBeePlugin
                             Logger.Info("Generating playlist " + playlistName + "...");
                             mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);                        
                             isfirstsong = false;
-                            Logger.Info("Found the fisrt Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                            Logger.Info("Found the first Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                         }
                         else
                         {
@@ -478,17 +504,6 @@ namespace MusicBeePlugin
         {
             switch (type)
             {
-                case NotificationType.PluginStartup:
-                    switch (mbApiInterface.Player_GetPlayState())
-                    {
-                        case PlayState.Playing:                         
-                            break;
-                        case PlayState.Paused:
-                            break;
-                        case PlayState.Stopped:
-                            break;
-                    }
-                    break;
                 case NotificationType.TrackChanged:
 
                     if (mbApiInterface.Player_GetShuffle())
@@ -506,6 +521,7 @@ namespace MusicBeePlugin
                     string CurrentSongKey = mbApiInterface.NowPlaying_GetFileTag(MetaDataTypeKey);
                     string CurrentSongEnergy = mbApiInterface.NowPlaying_GetFileTag(MetaDataTypeEnergy);
                     string CurrentSongRating = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Rating);
+                    string CurrentSongLove = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.RatingLove);
                     string CurrentSongGenre = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Genre);
                     string CurrentSongURL = mbApiInterface.NowPlayingList_GetFileProperty(CurrentSongIndex, FilePropertyType.Url);
 
@@ -536,10 +552,10 @@ namespace MusicBeePlugin
                         }
                     }
                     
-                    if (allowbpm || allowharmonickey || allowratings || allowgenres)
+                    if (allowbpm || allowharmonickey || allowratings || allowlove || allowgenres)
                     {
                         int NextSongIndex;
-                        string NextSongArtist, NextSongTitle, NextSongBPM, NextSongKey, NextSongEnergy, NextSongRating, NextSongGenre, NextSongURL;
+                        string NextSongArtist, NextSongTitle, NextSongBPM, NextSongKey, NextSongEnergy, NextSongRating, NextSongLove, NextSongGenre, NextSongURL;
 
                         string[] CountNowPlayingFiles = { };
                         mbApiInterface.NowPlayingList_QueryFilesEx("", out CountNowPlayingFiles);
@@ -565,6 +581,7 @@ namespace MusicBeePlugin
                             NextSongKey = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataTypeKey);
                             NextSongEnergy = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataTypeEnergy);
                             NextSongRating = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Rating);
+                            NextSongLove = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.RatingLove);
                             NextSongGenre = mbApiInterface.NowPlayingList_GetFileTag(NextSongIndex, MetaDataType.Genre);
                             NextSongURL = mbApiInterface.NowPlayingList_GetFileProperty(NextSongIndex, FilePropertyType.Url);
 
@@ -591,7 +608,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Logger.Warning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without GENRE : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -636,7 +653,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Logger.Warning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without KEY : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -662,7 +679,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Logger.Warning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without BPM : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -684,7 +701,7 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Logger.Warning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without Energy : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -706,7 +723,29 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Logger.Warning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Warning("Skipping Song without Ratings : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
+                                    FoundNextSong = false;
+                                    mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                    continue;
+                                }
+                            }
+
+                            if (allowlove)
+                            {
+                                if (NextSongLove != string.Empty)
+                                {
+                                    if (NextSongLove=="L") FoundNextSong = true;
+                                    else
+                                    {
+                                        FoundNextSong = false;
+                                        mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
+                                        mbApiInterface.NowPlayingList_QueueLast(NextSongURL);
+                                        continue;
+                                    }
+                                }
+                                else
+                                {
+                                    Logger.Warning("Skipping Song without Love : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -729,18 +768,18 @@ namespace MusicBeePlugin
 
                                 if (isfirstsong || !playlistexist)
                                 {
-                                    Logger.Info("Creating playlist " + playlistName + " with first song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Info("Creating playlist " + playlistName + " with first song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                     mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
                                     isfirstsong = false;
                                 }
                                 else
                                 {
-                                    Logger.Info("Adding to playlist " + playlistName + " the song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
+                                    Logger.Info("Adding to playlist " + playlistName + " the song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                     if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                                     else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
                                 }
                             }
-                            else { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']"); }
+                            else { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']"); }
                         }
                     }
 
@@ -762,6 +801,7 @@ namespace MusicBeePlugin
                 minenergy = int.Parse(ini.Read("MINENERGY", "ENERGY"));
                 Boolean.TryParse(ini.Read("ALLOWRATINGS", "RATINGS"), out allowratings);
                 minrattings = int.Parse(ini.Read("MINRATINGS", "RATINGS"));
+                Boolean.TryParse(ini.Read("ALLOWLOVE", "LOVE"), out allowlove);
                 Boolean.TryParse(ini.Read("ALLOWGENRES", "GENRES"), out allowgenres);
                 string genresallowed = ini.Read("GENRESSELECTED", "GENRES");
                 genresAllowed = genresallowed.Split(',').ToArray();
@@ -780,7 +820,7 @@ namespace MusicBeePlugin
                 BeatDetectionEvery = ini.Read("BEATDETECTIONEVERY", "HUE");
                 Boolean.TryParse(ini.Read("DISABLELOGGING", "HUE"), out disablelogging);
 
-                Logger.Info("Settings : ALLOWBPM=" + allowbpm + "[Max Diff " + DiffBPM + "] - ALLOWHARMONICKEY=" + allowharmonickey + " - ALLOWENERGY = " + allowenergy + "[Min " + minenergy + "] - ALLOWRATINGS=" + allowratings + "[Min " + minrattings + "] - ALLOWGENRES=" + allowgenres + "[" + genresallowed + "] - SAVESONGSPLAYLIST=" + savesongsplaylist + " - NUMBERSONGSPLAYLIST=" + numbersongsplaylist + " - ALLOWSCANNINGMESSAGEBOX=" + "[" + allowscanningmessagebox + "] - ALLOWHUE=" + allowhue + "[Change lights when " + changelightswhen + "] - LIGHTSALLOWED=" + ini.Read("LIGHTSALLOWED", "HUE") + " - BRIGHTNESSLIGHTSMIN=" + brightnesslightmin + " - BRIGHTNESSLIGHTSMAX=" + brightnesslightmax + " - BEATDETECTIONEVERY=" + BeatDetectionEvery + "ms - DISABLELOGGING=" + disablelogging);
+                Logger.Info("Settings : ALLOWBPM=" + allowbpm + "[Max Diff " + DiffBPM + "] - ALLOWHARMONICKEY=" + allowharmonickey + " - ALLOWENERGY = " + allowenergy + "[Min " + minenergy + "] - ALLOWRATINGS=" + allowratings + "[Min " + minrattings + "] - ALLOWLOVE=" + allowlove + " - ALLOWGENRES=" + allowgenres + "[" + genresallowed + "] - SAVESONGSPLAYLIST=" + savesongsplaylist + " - NUMBERSONGSPLAYLIST=" + numbersongsplaylist + " - ALLOWSCANNINGMESSAGEBOX=" + "[" + allowscanningmessagebox + "] - ALLOWHUE=" + allowhue + "[Change lights when " + changelightswhen + "] - LIGHTSALLOWED=" + ini.Read("LIGHTSALLOWED", "HUE") + " - BRIGHTNESSLIGHTSMIN=" + brightnesslightmin + " - BRIGHTNESSLIGHTSMAX=" + brightnesslightmax + " - BEATDETECTIONEVERY=" + BeatDetectionEvery + "ms - DISABLELOGGING=" + disablelogging);
                 isSettingsChanged = false;
 
                 if (allowhue && APIKey != string.Empty) { settings.InitBridge(); }

@@ -89,12 +89,14 @@ namespace MusicBeePlugin
                 Boolean.TryParse(Plugin.ini.Read("ALLOWRATINGS", "RATINGS"), out flag);
                 CB_AllowRatings.Checked = flag;
                 TB_MinRatings.Text = Plugin.ini.Read("MINRATINGS", "RATINGS");
+                Boolean.TryParse(Plugin.ini.Read("ALLOWLOVE", "LOVE"), out flag);
+                CB_AllowLove.Checked = flag;
                 Boolean.TryParse(Plugin.ini.Read("ALLOWGENRES", "GENRES"), out flag);
                 CB_AllowGenres.Checked = flag;
                 CCB_Genres.Text = Plugin.ini.Read("GENRESSELECTED", "GENRES");
                 Plugin.genresAllowed = CCB_Genres.Text.Split(',').ToArray();
 
-                if (CB_AllowBPM.Checked || CB_AllowInitialKey.Checked || CB_AllowEnergy.Checked || CB_AllowRatings.Checked || CB_AllowGenres.Checked)
+                if (CB_AllowBPM.Checked || CB_AllowInitialKey.Checked || CB_AllowEnergy.Checked || CB_AllowRatings.Checked || CB_AllowLove.Checked || CB_AllowGenres.Checked)
                 {
                     CB_SaveSongsPlaylist.Enabled = true;
                     LB_NumberSongsPlaylist.Enabled = true;
@@ -250,6 +252,7 @@ namespace MusicBeePlugin
             Plugin.ini.Write("MINENERGY", TB_MinEnergy.Text, "ENERGY");
             Plugin.ini.Write("ALLOWRATINGS", CB_AllowRatings.Checked.ToString(), "RATINGS");
             Plugin.ini.Write("MINRATINGS", TB_MinRatings.Text, "RATINGS");
+            Plugin.ini.Write("ALLOWLOVE", CB_AllowLove.Checked.ToString(), "LOVE");
             Plugin.ini.Write("ALLOWGENRES", CB_AllowGenres.Checked.ToString(), "GENRES");
             Plugin.ini.Write("GENRESSELECTED", CCB_Genres.Text, "GENRES");
             Plugin.ini.Write("SAVESONGSPLAYLIST", CB_SaveSongsPlaylist.Checked.ToString(), "PLAYLIST");
@@ -638,7 +641,10 @@ namespace MusicBeePlugin
         {
             Toggle_SaveSongsPlaylist();
         }
-
+        private void CB_AllowLove_CheckStateChanged(object sender, EventArgs e)
+        {
+            Toggle_SaveSongsPlaylist();
+        }
         private void CB_AllowGenres_CheckStateChanged(object sender, EventArgs e)
         {
             Toggle_SaveSongsPlaylist();
@@ -646,11 +652,12 @@ namespace MusicBeePlugin
 
         private void Toggle_SaveSongsPlaylist()
         {
-            if (CB_AllowBPM.Checked || CB_AllowInitialKey.Checked || CB_AllowEnergy.Checked || CB_AllowRatings.Checked || CB_AllowGenres.Checked)
+            if (CB_AllowBPM.Checked || CB_AllowInitialKey.Checked || CB_AllowEnergy.Checked || CB_AllowRatings.Checked || CB_AllowLove.Checked || CB_AllowGenres.Checked)
             {
                 CB_SaveSongsPlaylist.Enabled = true;
                 LB_NumberSongsPlaylist.Enabled = true;
                 TB_NumberSongsPlaylist.Enabled = true;
+                CB_AllowScanningMessageBox.Enabled = true;
             }
             else
             {
@@ -658,6 +665,7 @@ namespace MusicBeePlugin
                 CB_SaveSongsPlaylist.Enabled = false;
                 LB_NumberSongsPlaylist.Enabled = false;
                 TB_NumberSongsPlaylist.Enabled = false;
+                CB_AllowScanningMessageBox.Enabled = false;
             }
         }
     }

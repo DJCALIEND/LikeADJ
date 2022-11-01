@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("mb_LikeADJ")]
-[assembly: AssemblyDescription("Auto Mix your songs according to BPM, Initial Key (Camelot), Energy, Ratings, Genres and Hue lighting")]
+[assembly: AssemblyDescription("Auto Mix your songs according to BPM, Initial Key (Camelot and/or Short/Long Open Key), Energy, Ratings, Genres with Hue ligthing")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("mb_LikeADJ")]
-[assembly: AssemblyCopyright("DJC👽D - marc.giraudou@outlook.com - 2019")]
+[assembly: AssemblyCopyright("DJC👽D - marc.giraudou@outlook.com - 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.16.0")]
-[assembly: AssemblyFileVersion("2.0.16.0")]
+[assembly: AssemblyVersion("2.0.21.0")]
+[assembly: AssemblyFileVersion("2.0.21.0")]
