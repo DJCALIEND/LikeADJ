@@ -25,7 +25,7 @@ namespace MusicBeePlugin
         public Settings()
         {
             InitializeComponent();
-            this.Text = "LikeADJ plugin [ DJC👽D - " + Plugin.LikeADJVersion + " ] " + "[MusicBee " + Application.ProductVersion + "]";
+            this.Text = "LikeADJ plugin [ DJC👽D - " + Plugin.LikeADJVersion + " ] " + "[ MusicBee " + Application.ProductVersion + " ]";
             if (Plugin.MusicBeeisportable) bridgeXmlPath = Application.StartupPath + "\\Plugins\\mb_LikeADJ.xml";
             else bridgeXmlPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.xml";
         }
