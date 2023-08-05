@@ -23,6 +23,7 @@ namespace CustomExtensions
 namespace MusicBeePlugin
 {
     using CustomExtensions;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Threading;
 
@@ -62,6 +63,7 @@ namespace MusicBeePlugin
         public string playlistName = "LikeADJ History "+ DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss");
         public string[] mbPlaylistSongFiles = new string[1];
         public bool isfirstsong = true;
+        public bool isfirstsongnext = true;
         public static MetaDataType MetaDataTypeKey, MetaDataTypeEnergy = new MetaDataType();
         public static bool foundmetadatatypekey = false;
         public static bool foundmetadatatypeenergy = false;
@@ -73,12 +75,12 @@ namespace MusicBeePlugin
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "LikeADJ";
             about.Description = "Auto Mix your songs according to \nBPM, Initial Key, Energy, Track Rating, Love, Genre with Hue lighting";
-            about.Author = "DJC👽D - marc.giraudou@outlook.com - 2022";
+            about.Author = "DJC👽D - marc.giraudou@outlook.com - 2023";
             about.TargetApplication = "";
             about.Type = PluginType.General;
             about.VersionMajor = 2;
             about.VersionMinor = 0;
-            about.Revision = 22;
+            about.Revision = 23;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
@@ -198,7 +200,25 @@ namespace MusicBeePlugin
 
         public void StartLikeADJ(object sender, EventArgs e)
         {
-            mbApiInterface.NowPlayingList_PlayLibraryShuffled();
+            PopulateNowPlayingList(null, null);
+            isfirstsong = true;
+            ReceiveNotification(mbApiInterface.NowPlayingList_GetFileProperty(1, FilePropertyType.Url), NotificationType.TrackChanged);
+            isfirstsong = false;
+        }
+
+        public void PopulateNowPlayingList(object sender, EventArgs e)
+        {
+            Logger.Info("Clearing the NowPlayingList...");
+            mbApiInterface.NowPlayingList_Clear();
+
+            string[] songsList = null;
+            mbApiInterface.Library_QueryFilesEx(null, out songsList);
+            Logger.Info(songsList.Length + " songs found in your entire library.");
+
+            Random random = new Random();
+            songsList = songsList.OrderBy(x => random.Next()).ToArray();
+            mbApiInterface.NowPlayingList_QueueFilesNext(songsList);
+            Logger.Info(songsList.Length + " songs shuffled and added to the NowPlayingList...");
         }
 
         public void GeneratePlaylist(object sender, EventArgs e)
@@ -206,27 +226,25 @@ namespace MusicBeePlugin
             if (!allowbpm && !allowharmonickey && !allowenergy && !allowratings && !allowlove && !allowgenres) MessageBox.Show("You must activate at least one feature (BPM, Initial Key, Energy, Track Rating, Love or Genre) to generate a LikeADJ playlist !!!", "LikeADJ " + LikeADJVersion);
             else
             {
+                mbApiInterface.Player_Stop();
                 Stopwatch timer = new Stopwatch();
                 timer.Start();
 
                 CountSongsPlaylist = 0;
                 isfirstsong = true;
                 if (isSettingsChanged) LoadSettings();
-                int CurrentSongIndex=0;
+                int CurrentSongIndex=1;
                 string oldplaylistname = playlistName;
 
                 message = new Message();
                 message.Show();
                 message.Text = "LikeADJ - Generating playlist... Please wait...";
 
-                mbApiInterface.NowPlayingList_Clear();
-                mbApiInterface.NowPlayingList_PlayLibraryShuffled();
-                //Thread.Sleep(10000); // Strange bug I have to wait else the player don't stop and NotificationType.TrackChanged is enclenched !!!!
-                mbApiInterface.Player_Stop();
+                PopulateNowPlayingList(null,null);
 
                 do
                 {
-                    if (isfirstsong) CurrentSongIndex = mbApiInterface.NowPlayingList_GetCurrentIndex();
+                    if (isfirstsong) CurrentSongIndex = mbApiInterface.NowPlayingList_GetNextIndex(CurrentSongIndex);
                     string CurrentSongArtist = mbApiInterface.NowPlayingList_GetFileTag(CurrentSongIndex, MetaDataType.Artist);
                     string CurrentSongTitle = mbApiInterface.NowPlayingList_GetFileTag(CurrentSongIndex, MetaDataType.TrackTitle);
                     string CurrentSongBPM = mbApiInterface.NowPlayingList_GetFileTag(CurrentSongIndex, MetaDataType.BeatsPerMin);
@@ -277,6 +295,7 @@ namespace MusicBeePlugin
 
                         if (NBSongsPassed >= CountNowPlayingFiles.Length)
                         {
+                            Plugin.message.Close();
                             MessageBox.Show("Looping detected in the 'NowPlaying' playlist !!!\n\nThis means that LikeADJ is not able to found the next song and is doing an infinite loop.\n\nYou have only " + CountNowPlayingFiles.Length + " songs in this playlist.");
                             mbApiInterface.Player_Stop();
                             break;
@@ -570,7 +589,8 @@ namespace MusicBeePlugin
                         int NBSongsPassed=0;
                         do
                         {
-                            if (allowscanningmessagebox) message.Text = "LikeADJ - Trying to find next song... "+ NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait...";
+                            if (isfirstsong) { if (allowscanningmessagebox) message.Text = "LikeADJ - Trying to find the first song... " + NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait...";}
+                            else if (allowscanningmessagebox) message.Text = "LikeADJ - Trying to find next song... " + NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait...";
 
                             NBSongsPassed++;
 
@@ -587,6 +607,7 @@ namespace MusicBeePlugin
 
                             if (NBSongsPassed >= CountNowPlayingFiles.Length)
                             {
+                                Plugin.message.Close();
                                 MessageBox.Show("Looping detected in the 'NowPlaying' playlist !!!\n\nThis means that LikeADJ is not able to found the next song and is doing an infinite loop.\n\nYou have only "+ CountNowPlayingFiles.Length + " songs in this playlist.");
                                 mbApiInterface.Player_Stop();
                                 break;
@@ -766,17 +787,25 @@ namespace MusicBeePlugin
                                 if (MusicBeeisportable) playlistexist = File.Exists(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp");
                                 else playlistexist = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp");
 
-                                if (isfirstsong || !playlistexist)
+                                if (isfirstsong)
                                 {
-                                    Logger.Info("Creating playlist " + playlistName + " with first song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
-                                    mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
+                                    mbApiInterface.NowPlayingList_PlayNow(NextSongURL);
                                     isfirstsong = false;
                                 }
                                 else
                                 {
-                                    Logger.Info("Adding to playlist " + playlistName + " the song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
-                                    if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
-                                    else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
+                                    if (isfirstsongnext)
+                                    {
+                                        Logger.Info("Creating playlist " + playlistName + " with first song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
+                                        mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
+                                        isfirstsongnext = false;
+                                    }
+                                    else
+                                    { 
+                                        Logger.Info("Adding to playlist " + playlistName + " the song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
+                                        if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
+                                        else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
+                                    }
                                 }
                             }
                             else { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']"); }
