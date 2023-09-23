@@ -14,7 +14,6 @@ namespace MusicBeePlugin
 {
     public partial class Settings : Form
     {
-        public string bridgeXmlPath;
         public JavaScriptSerializer jss = new JavaScriptSerializer();
         public List<JSONBridge> bridges;
         private bool isFormLoading = true;
@@ -26,8 +25,6 @@ namespace MusicBeePlugin
         {
             InitializeComponent();
             this.Text = "LikeADJ plugin [ DJC👽D - " + Plugin.LikeADJVersion + " ] " + "[ MusicBee " + Application.ProductVersion + " ]";
-            if (Plugin.MusicBeeisportable) bridgeXmlPath = Application.StartupPath + "\\Plugins\\mb_LikeADJ.xml";
-            else bridgeXmlPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.xml";
         }
 
         public void Settings_Load(object sender, EventArgs e)
@@ -166,8 +163,7 @@ namespace MusicBeePlugin
             }
             else
             {
-                if (Plugin.MusicBeeisportable) Plugin.Logger.Info("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found. Creating a new one...");
-                else Plugin.Logger.Info("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found. Creating a new one...");
+                Plugin.Logger.Info("No ini file " + Path.Combine(Plugin.mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.ini") + " found. Creating a new one...");
 
                 TB_DiffBPM.Text = "10";
                 TB_MinEnergy.Text = "6";
@@ -302,7 +298,7 @@ namespace MusicBeePlugin
                 WebClient client = new WebClient();
                 client.DownloadFileCompleted += Client_DownloadFileCompleted;
                 string descriptionURL = "http://" + bridges[0].Internalipaddress + "/description.xml";
-                client.DownloadFileAsync(new Uri(descriptionURL), bridgeXmlPath);
+                client.DownloadFileAsync(new Uri(descriptionURL), Plugin.BridgeXmlPath);
                 BT_PairHue.Visible = true;
                 lblBridgeCnx.Visible = true;
                 lblBridgeCnx.Text = "Hue bridge found :)\nClick on the button on your hue and after to 'Pair' button";
@@ -331,11 +327,8 @@ namespace MusicBeePlugin
 
         public void InitBridge()
         {
-            if (Plugin.MusicBeeisportable) bridgeXmlPath = Application.StartupPath + "\\Plugins\\mb_LikeADJ.xml";
-            else bridgeXmlPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.xml";
-
             XmlSerializer bridgeGetter = new XmlSerializer(typeof(Hue));
-            TextReader bridgeXmlReader = new StreamReader(bridgeXmlPath);
+            TextReader bridgeXmlReader = new StreamReader(Plugin.BridgeXmlPath);
             Plugin.theHueBridge = (Hue)bridgeGetter.Deserialize(bridgeXmlReader);
             bridgeXmlReader.Close();
 
@@ -458,7 +451,7 @@ namespace MusicBeePlugin
         {
             Plugin.Logger.Info("Pairing your bridge...");
             XmlSerializer bridgeGetter = new XmlSerializer(typeof(Hue));
-            TextReader bridgeXmlReader = new StreamReader(bridgeXmlPath);
+            TextReader bridgeXmlReader = new StreamReader(Plugin.BridgeXmlPath);
             Plugin.theHueBridge = (Hue)bridgeGetter.Deserialize(bridgeXmlReader);
             bridgeXmlReader.Close();
 
@@ -511,7 +504,7 @@ namespace MusicBeePlugin
             Plugin.APIKey = Plugin.ini.Read("APIKEY", "HUE");
             if (Plugin.APIKey != string.Empty) { Plugin.ini.DeleteKey("APIKEY", "HUE"); }
 
-            if (File.Exists(bridgeXmlPath)) { File.Delete(bridgeXmlPath); }
+            if (File.Exists(Plugin.BridgeXmlPath)) { File.Delete(Plugin.BridgeXmlPath); }
 
             lblBridgeCnx.Visible = true;
             BT_PairHue.Visible = false;

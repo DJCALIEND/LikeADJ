@@ -41,10 +41,10 @@ namespace MusicBeePlugin
         public static Settings settings= new Settings();
         static Message message = new Message();
         public static SimpleLogger Logger;
-        public static string LikeADJVersion, LikeADJIniFile;
+        public static string LikeADJVersion, LikeADJIniFile, LikeADJLogFile, BridgeXmlPath;
         public static bool isSettingsChanged = false;
         public static bool allowbpm, allowharmonickey, allowenergy, allowratings, allowlove, allowgenres, savesongsplaylist, allowscanningmessagebox, allowhue;
-        public static bool disablelogging, MusicBeeisportable;
+        public static bool disablelogging;
         public static int DiffBPM, minenergy, minrattings, numbersongsplaylist, brightnesslightmin, brightnesslightmax, CountSongsPlaylist;
         public static string changelightswhen, BeatDetectionEvery;
         public static volatile string APIKey;
@@ -65,6 +65,7 @@ namespace MusicBeePlugin
         public static MetaDataType MetaDataTypeKey, MetaDataTypeEnergy = new MetaDataType();
         public static bool foundmetadatatypekey = false;
         public static bool foundmetadatatypeenergy = false;
+        public string PlaylistLive = "";
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -78,39 +79,29 @@ namespace MusicBeePlugin
             about.Type = PluginType.General;
             about.VersionMajor = 2;
             about.VersionMinor = 0;
-            about.Revision = 24;
+            about.Revision = 25;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
             about.ConfigurationPanelHeight = 0;
 
-            if (Application.StartupPath != @"C:\Program Files (x86)\MusicBee") MusicBeeisportable = true;
-            else MusicBeeisportable = false;
-
-            if (MusicBeeisportable)
-            {
-                File.Delete(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
-                Logger = new SimpleLogger(Application.StartupPath + "\\Plugins\\mb_LikeADJ.log");
-                LikeADJIniFile = Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini";
-            }
-            else
-            {
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");
-                Logger = new SimpleLogger(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log");
-                LikeADJIniFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini";               
-            }
-
+            LikeADJIniFile = Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.ini");
             ini = new IniFile(LikeADJIniFile);
 
-            LikeADJTimerBeatDetectedSimple.Elapsed += new ElapsedEventHandler(BeatDetection.IsBeatDetectedSimple);
-            LikeADJTimerBeatDetectedSubBand.Elapsed += new ElapsedEventHandler(BeatDetection.IsBeatDetectedSubBand);
-            LikeADJTimerRedAlertEndOfSong.Elapsed += new ElapsedEventHandler(RedAlertEndOfSong);
+            LikeADJLogFile = Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.log");
+            File.Delete(LikeADJLogFile);
+            Logger = new SimpleLogger(LikeADJLogFile);
+
+            BridgeXmlPath = Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.xml");
 
             LikeADJVersion = about.VersionMajor + "." + about.VersionMinor + "." + about.Revision;
             Logger.Info("Starting LikeADJ " + LikeADJVersion + " plugin by DJC👽D... " + "[ MusicBee " + Application.ProductVersion + " ]");
 
-            if (MusicBeeisportable) Logger.Info("MusicBee is portable. Using [" + Application.StartupPath + "] to save LikeADJ files.");
-            else Logger.Info("MusicBee is installed. Using [" + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\] to save LikeADJ files.");
+            Logger.Info("Using [" + mbApiInterface.Setting_GetPersistentStoragePath() + "] to save LikeADJ files.");
+
+            LikeADJTimerBeatDetectedSimple.Elapsed += new ElapsedEventHandler(BeatDetection.IsBeatDetectedSimple);
+            LikeADJTimerBeatDetectedSubBand.Elapsed += new ElapsedEventHandler(BeatDetection.IsBeatDetectedSubBand);
+            LikeADJTimerRedAlertEndOfSong.Elapsed += new ElapsedEventHandler(RedAlertEndOfSong);
 
             mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Start", "LikeADJ", StartLikeADJ);
             mbApiInterface.MB_AddMenuItem("context.Main/LikeADJ - Configure", "LikeADJ", ConfigurePlugin);
@@ -187,13 +178,8 @@ namespace MusicBeePlugin
 
         public static void ViewLogFile(object sender, EventArgs e)
         {
-            string logfile;
-
-            if (Plugin.MusicBeeisportable) logfile=Application.StartupPath + "\\Plugins\\mb_LikeADJ.log";
-            else logfile=Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.log";
-
-            LogMonitor f2 = new LogMonitor(logfile);
-            f2.Show();
+            LogMonitor LogFile = new LogMonitor(Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.log"));
+            LogFile.Show();
         }
 
         public void StartLikeADJ(object sender, EventArgs e)
@@ -237,6 +223,8 @@ namespace MusicBeePlugin
                 message = new Message();
                 message.Show();
                 message.Text = "LikeADJ - Generating playlist... Please wait...";
+
+                string PlaylistGenerated = "";
 
                 PopulateNowPlayingList(null,null);
 
@@ -452,7 +440,6 @@ namespace MusicBeePlugin
                             }
                             else
                             {
-                                Logger.Warning("Skipping Song without Love : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                 FoundNextSong = false;
                                 mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                 continue;
@@ -470,14 +457,13 @@ namespace MusicBeePlugin
                         {                               
                             playlistName = DateTime.Now.ToString("LikeADJ dd-MM-yyyy HH-mm-ss");
                             Logger.Info("Generating playlist " + playlistName + "...");
-                            mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);                        
+                            PlaylistGenerated = mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);                        
                             isfirstsong = false;
                             Logger.Info("Found the first Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                         }
                         else
                         {
-                            if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
-                            else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
+                            mbApiInterface.Playlist_AppendFiles(PlaylistGenerated, mbPlaylistSongFiles);
                             Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - GENRE:'" + NextSongGenre + "']");
                         }
 
@@ -587,7 +573,7 @@ namespace MusicBeePlugin
                         int NBSongsPassed=0;
                         do
                         {
-                            if (isfirstsong) { if (allowscanningmessagebox) message.Text = "LikeADJ - Trying to find the first song... " + NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait...";}
+                            if (isfirstsong) { if (allowscanningmessagebox) message.Text = "LikeADJ - Trying to find the first song... " + NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait..."; }
                             else if (allowscanningmessagebox) message.Text = "LikeADJ - Trying to find next song... " + NBSongsPassed + "/" + CountNowPlayingFiles.Length + " songs passed. Please wait...";
 
                             NBSongsPassed++;
@@ -764,7 +750,6 @@ namespace MusicBeePlugin
                                 }
                                 else
                                 {
-                                    Logger.Warning("Skipping Song without Love : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
                                     FoundNextSong = false;
                                     mbApiInterface.NowPlayingList_RemoveAt(NextSongIndex);
                                     continue;
@@ -779,11 +764,7 @@ namespace MusicBeePlugin
                         {
                             if (savesongsplaylist)
                             {
-                                bool playlistexist;
                                 mbPlaylistSongFiles[0] = CurrentSongURL;
-
-                                if (MusicBeeisportable) playlistexist = File.Exists(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp");
-                                else playlistexist = File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp");
 
                                 if (isfirstsong)
                                 {
@@ -795,15 +776,14 @@ namespace MusicBeePlugin
                                     if (isfirstsongnext)
                                     {
                                         Logger.Info("Creating playlist " + playlistName + " with first song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
-                                        mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
+                                        PlaylistLive= mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
                                         isfirstsongnext = false;
                                     }
                                     else
                                     { 
                                         Logger.Info("Adding to playlist " + playlistName + " the song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
-                                        if (MusicBeeisportable) mbApiInterface.Playlist_AppendFiles(Application.StartupPath + "\\Library\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
-                                        else mbApiInterface.Playlist_AppendFiles(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\Playlists\\" + playlistName + ".mbp", mbPlaylistSongFiles);
-                                    }
+                                        mbApiInterface.Playlist_AppendFiles(PlaylistLive, mbPlaylistSongFiles);
+                                   }
                                 }
                             }
                             else { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']"); }
@@ -883,8 +863,7 @@ namespace MusicBeePlugin
             }
             catch
             {
-                if (MusicBeeisportable) if (!File.Exists(Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini")) Logger.Info("No ini file " + Application.StartupPath + "\\Plugins\\mb_LikeADJ.ini found.");
-                else if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini")) Logger.Info("No ini file " + Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Music\\MusicBee\\mb_LikeADJ.ini found.");
+                if (!File.Exists(Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.ini"))) Logger.Info("No ini file " + Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.ini") + " found.");
             }
         }
 
