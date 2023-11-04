@@ -9,6 +9,7 @@ using System.Text;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using static MusicBeePlugin.BeatDetection;
 
 namespace MusicBeePlugin
 {
@@ -163,7 +164,7 @@ namespace MusicBeePlugin
             }
             else
             {
-                Plugin.Logger.Info("No ini file " + Path.Combine(Plugin.mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.ini") + " found. Creating a new one...");
+                Plugin.Logger.Info("No ini file " + Plugin.LikeADJIniFile + " found. Creating a new one...");
 
                 TB_DiffBPM.Text = "10";
                 TB_MinEnergy.Text = "6";
@@ -413,6 +414,7 @@ namespace MusicBeePlugin
                 BT_ScanLights.Visible = true;
                 LB_ChangeLightsWhen.Visible = true;
                 CB_ChangeLightsWhen.Visible = true;
+                CB_ChangeLightsWhen.SelectedItem = CB_ChangeLightsWhen.Items[2];
                 LB_Lights.Visible = true;
                 LV_Lights.Visible = true;
                 LB_BrightnessLightsRange.Visible = true;

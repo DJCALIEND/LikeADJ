@@ -213,9 +213,9 @@
             this.label1.Location = new System.Drawing.Point(243, 263);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(221, 13);
+            this.label1.Size = new System.Drawing.Size(220, 13);
             this.label1.TabIndex = 64;
-            this.label1.Text = "(SHIFT+DEL: Check all or DEL: Uncheck All)";
+            this.label1.Text = "(SHIFT+DEL: Check all or DEL: Uncheck all)";
             // 
             // LB_SelectGenres
             // 

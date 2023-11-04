@@ -79,7 +79,7 @@ namespace MusicBeePlugin
             about.Type = PluginType.General;
             about.VersionMajor = 2;
             about.VersionMinor = 0;
-            about.Revision = 25;
+            about.Revision = 26;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
@@ -195,8 +195,7 @@ namespace MusicBeePlugin
             Logger.Info("Clearing the NowPlayingList...");
             mbApiInterface.NowPlayingList_Clear();
 
-            string[] songsList = null;
-            mbApiInterface.Library_QueryFilesEx(null, out songsList);
+            mbApiInterface.Library_QueryFilesEx(null, out string[] songsList);
             Logger.Info(songsList.Length + " songs found in your entire library.");
 
             Random random = new Random();
@@ -863,7 +862,7 @@ namespace MusicBeePlugin
             }
             catch
             {
-                if (!File.Exists(Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.ini"))) Logger.Info("No ini file " + Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.ini") + " found.");
+                if (!File.Exists(LikeADJIniFile)) Logger.Info("No ini file " + LikeADJIniFile + " found.");
             }
         }
 
