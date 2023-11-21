@@ -32,15 +32,14 @@
             // 
             // Message
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(820, 0);
+            this.ClientSize = new System.Drawing.Size(409, 0);
             this.ControlBox = false;
-            this.Margin = new System.Windows.Forms.Padding(6);
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Message";
+            this.RightToLeftLayout = true;
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

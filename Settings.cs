@@ -414,7 +414,6 @@ namespace MusicBeePlugin
                 BT_ScanLights.Visible = true;
                 LB_ChangeLightsWhen.Visible = true;
                 CB_ChangeLightsWhen.Visible = true;
-                CB_ChangeLightsWhen.SelectedItem = CB_ChangeLightsWhen.Items[2];
                 LB_Lights.Visible = true;
                 LV_Lights.Visible = true;
                 LB_BrightnessLightsRange.Visible = true;
