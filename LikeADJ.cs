@@ -74,12 +74,12 @@ namespace MusicBeePlugin
             about.PluginInfoVersion = PluginInfoVersion;
             about.Name = "LikeADJ";
             about.Description = "Auto Mix your songs according to \nBPM, Initial Key, Energy, Track Rating, Love, Genre with Hue lighting";
-            about.Author = "DJC👽D - marc.giraudou@outlook.com - 2023";
+            about.Author = "DJC👽D - marc.giraudou@outlook.com - 2024";
             about.TargetApplication = "";
             about.Type = PluginType.General;
             about.VersionMajor = 2;
             about.VersionMinor = 1;
-            about.Revision = 0;
+            about.Revision = 1;
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents | ReceiveNotificationFlags.TagEvents);
@@ -178,7 +178,7 @@ namespace MusicBeePlugin
 
         public static void ViewLogFile(object sender, EventArgs e)
         {
-            LogMonitor LogFile = new LogMonitor(Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "mb_LikeADJ.log"));
+            LogMonitor LogFile = new LogMonitor(LikeADJLogFile);
             LogFile.Show();
         }
 
@@ -761,6 +761,10 @@ namespace MusicBeePlugin
                         if (NBSongsPassed >= CountNowPlayingFiles.Length) { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after nothing match your criteria"); }
                         else
                         {
+                            string[] CountNowPlayingFilesRemaining = { };
+                            mbApiInterface.NowPlayingList_QueryFilesEx("", out CountNowPlayingFilesRemaining);
+                            int NowPlayingFilesRemainingSongsMixable = CountNowPlayingFilesRemaining.Length - NextSongIndex;
+
                             if (savesongsplaylist)
                             {
                                 mbPlaylistSongFiles[0] = CurrentSongURL;
@@ -774,18 +778,18 @@ namespace MusicBeePlugin
                                 {
                                     if (isfirstsongnext)
                                     {
-                                        Logger.Info("Creating playlist " + playlistName + " with first song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
+                                        Logger.Info("Creating playlist " + playlistName + " with first song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']. There are still " + NowPlayingFilesRemainingSongsMixable + " songs left in the NowPlayingList to be mixable.");
                                         PlaylistLive= mbApiInterface.Playlist_CreatePlaylist("", playlistName, mbPlaylistSongFiles);
                                         isfirstsongnext = false;
                                     }
                                     else
                                     { 
-                                        Logger.Info("Adding to playlist " + playlistName + " the song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']");
+                                        Logger.Info("Adding to playlist " + playlistName + " the song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']. There are still " + NowPlayingFilesRemainingSongsMixable + " songs left in the NowPlayingList to be mixable.");
                                         mbApiInterface.Playlist_AppendFiles(PlaylistLive, mbPlaylistSongFiles);
                                    }
                                 }
                             }
-                            else { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']"); }
+                            else { Logger.Info("Current Song : " + CurrentSongArtist + "-" + CurrentSongTitle + " [BPM:" + CurrentSongBPM + " - KEY:" + CurrentSongKey + " - ENERGY:" + CurrentSongEnergy + " - RATING:" + CurrentSongRating + " - LOVE:" + CurrentSongLove + " - GENRE:'" + CurrentSongGenre + "'] and " + NBSongsPassed + " songs after -> Next Song : " + NextSongArtist + "-" + NextSongTitle + " [BPM:" + NextSongBPM + " - KEY:" + NextSongKey + " - ENERGY:" + NextSongEnergy + " - RATING:" + NextSongRating + " - LOVE:" + NextSongLove + " - GENRE:'" + NextSongGenre + "']. There are still " + NowPlayingFilesRemainingSongsMixable + " songs left in the NowPlayingList to be mixable."); }                            
                         }
                     }
 
